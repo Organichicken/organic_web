@@ -15,7 +15,7 @@ $resp = $data = array();
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
     $resp['status'] = 200;
     
-    $res = db_query("SELECT * FROM `address` WHERE user_id = '".makesafe($_POST['user_id'])."'");
+    $res = db_query("SELECT * FROM `users` WHERE user_id = '".makesafe($_POST['user_id'])."'");
     while($row = db_fetch_assoc($res))
     {
         $data[] = $row;

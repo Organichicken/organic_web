@@ -134,7 +134,7 @@ function update_api_insights($url,$post_data)
 	return false;		
 }
 
-function get_image_url($type){
+function get_image_url($type,$folder = false){
     if(isset($_SERVER['HTTPS'])){
         $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
     }
@@ -146,8 +146,11 @@ function get_image_url($type){
 	else if($type === 'item') $folder_url .= 'items';
 	else if($type === 'user_profile') $folder_url .= 'user_profile_pics';
 	else if($type === 'recipe') $folder_url .= 'recipes';
+	else if($type === 'slider_image') $folder_url .= 'slider_images';
+	else if($type === 'tale') $folder_url .= 'tales';
 
 	global $app_name;
+	if($folder) return $folder_url."/";
     return $protocol . "://" . $_SERVER['HTTP_HOST'].'/'.$app_name.'/'.$folder_url.'/';
 }
 
@@ -219,7 +222,7 @@ function update_category($data,$is_update_img)
 	if($is_update_img){
 		$img_path = sqlValue("SELECT `category_image` FROM `categories` WHERE `category_id` = '".$data['category_id']."'");
 		//Remove the image from folder then delete the image
-		unlink(get_image_url('category').$img_path);
+		unlink(get_image_url('category',true).$img_path);
 		$update_img = ",`category_image`='".makesafe($path)."'";
 	}
 	
@@ -235,7 +238,7 @@ function delete_category($id)
 {
 	$img_path = sqlValue("SELECT `category_image` FROM `categories` WHERE `category_id` = '".$id."'");
 	//Remove the image from folder then delete the image
-	unlink(get_image_url('category').$img_path);
+	unlink(get_image_url('category',true).$img_path);
 	if(db_query("DELETE FROM `categories` WHERE `category_id` = '".$id."'")){
 		return true;
 	}	
@@ -257,7 +260,7 @@ function delete_item($id)
 {
 	$img_path = sqlValue("SELECT `item_image` FROM `items` WHERE `item_id` = '".$id."'");
 	//Remove the image from folder then delete the image
-	unlink(get_image_url('item').$img_path);
+	unlink(get_image_url('item',true).$img_path);
 	if(db_query("DELETE FROM `items` WHERE `item_id` = '".$id."'")){
 		return true;
 	}	
@@ -271,7 +274,7 @@ function update_item($data,$is_update_img)
 	if($is_update_img){
 		$img_path = sqlValue("SELECT `item_image` FROM `items` WHERE `item_id` = '".$data['item_id']."'");
 		//Remove the image from folder then delete the image
-		unlink(get_image_url('item').$img_path);
+		unlink(get_image_url('item',true).$img_path);
 		$update_img = ",`item_image`='".makesafe($data['img_path'])."'";
 	}
 	
@@ -335,7 +338,6 @@ function get_recipes_data($id = null){
 	if($id && is_numeric($id)){
 		$query = " WHERE recipe_id = '".$id."'";
 	}
-	// echo "SELECT recipe.*,item.item_name FROM `recipe` left outer join items as item ON recipe.item_id = item.item_id ".$query;
 	$res = db_query("SELECT recipe.*,item.item_name FROM `recipe` left outer join items as item ON recipe.item_id = item.item_id ".$query);
 	
 	while($row = db_fetch_assoc($res))
@@ -358,6 +360,10 @@ function add_new_recipe($data)
 // Delete given recipe (13-02-2021)
 function delete_recipe($id)
 {
+	$img_path = sqlValue("SELECT `recipe_image` FROM `recipe` WHERE `recipe_id` = '".$id."'");
+	//Remove the image from folder then delete the image
+	unlink(get_image_url('recipe',true).$img_path);
+
 	if(!empty($id) && db_query("DELETE FROM `recipe` WHERE `recipe_id` = '".$id."'")){
 		return true;
 	}	
@@ -371,7 +377,7 @@ function update_recipe($data,$is_update_img)
 	if($is_update_img){
 		$img_path = sqlValue("SELECT `recipe_image` FROM `recipe` WHERE `recipe_id` = '".$data['recipe_id']."'");
 		//Remove the image from folder then delete the image
-		unlink(get_image_url('recipe').$img_path);
+		unlink(get_image_url('recipe',true).$img_path);
 		$update_img = ",`recipe_image`='".makesafe($data['img_path'])."'";
 	}
 
@@ -513,5 +519,124 @@ function update_offer($data){
 	if(db_query($q)) return true;
 	
 	return false;
+}
+//Get meta data value based on given meta key(17-03-2021)
+function get_meta_value($meta_key)
+{
+	$meta_value = sqlValue("SELECT `meta_value` FROM `meta_data` WHERE `meta_key`='".$meta_key."'");
+	if(!empty($meta_value))
+		return $meta_value;
+	
+	return false;
+}
+
+//Update meta value based on meta key (17-03-2021)
+function update_meta_value($meta_key,$meta_val)
+{
+	if(sqlValue("SELECT COUNT(*) FROM `meta_data` WHERE `meta_key` = '".$meta_key."'"))
+		$meta_res = db_query("UPDATE `meta_data` SET `meta_value`='".safetodisplay($meta_val)."', `updated_at` = '".get_current_time()."' WHERE `meta_key`='".safetodisplay($meta_key)."'");
+	else
+		$meta_res = db_query("INSERT INTO `meta_data`(`meta_key`, `meta_value`, `updated_at`) VALUES ('".$meta_key."','".$meta_val."','".get_current_time()."')");
+	return $meta_res;
+}
+
+//Add video link (17-03-2021)
+function add_video($data)
+{
+	$video_data = get_meta_value('video_links');
+	$final_data = $video_data ? json_decode($video_data,true) : array();
+
+	array_push($final_data,array("id"=>"VID_".generateRandomString(4),"name"=>makesafe($data['video_name']),"url"=>makesafe($data['video_url'])));
+	
+	return update_meta_value('video_links',json_encode($final_data));
+}
+
+//Add video link (17-03-2021)
+function update_video($data)
+{
+	$video_data = get_meta_value('video_links');
+	$final_data = $video_data ? json_decode($video_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] == $data['video_action_id'])
+		{
+			$value['name'] = makesafe($data['video_name']);
+			$value['url'] = makesafe($data['video_url']);
+		} 
+		array_push($new_data,$value);
+	}
+	
+	return update_meta_value('video_links',json_encode($new_data));
+}
+
+//Delete video link (17-03-2021)
+function delete_video($id)
+{
+	$video_data = get_meta_value('video_links');
+	$final_data = $video_data ? json_decode($video_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] != $id) array_push($new_data,$value);
+	}
+	
+	return update_meta_value('video_links',json_encode($new_data));
+}
+
+//Delete slider image link (18-03-2021)
+function delete_slider_image($id)
+{
+	$images_data = get_meta_value('slider_images');
+	$final_data = $images_data ? json_decode($images_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] != $id) array_push($new_data,$value);
+		else unlink(get_image_url('slider_image',true).$value['img_path']);
+	}
+	
+	return update_meta_value('slider_images',json_encode($new_data));
+}
+
+//Add slider image (18-03-2021)
+function add_slider_image($data)
+{
+	$images_data = get_meta_value('slider_images');
+	$final_data = $images_data ? json_decode($images_data,true) : array();
+	$img_id = "IMG_".generateRandomString(4);
+	array_push($final_data,array("id"=>$img_id,"img_path"=>makesafe($data['img_path'])));
+	
+	if(update_meta_value('slider_images',json_encode($final_data)))
+		return $img_id;
+	else
+		return false;
+}
+//Delete tale image link (18-03-2021)
+function delete_tale_image($id)
+{
+	$images_data = get_meta_value('tales');
+	$final_data = $images_data ? json_decode($images_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] != $id) array_push($new_data,$value);
+		else{
+			unlink(get_image_url('tale',true).$value['img_path']);
+			unlink(get_image_url('tale',true).$value['thumb_img_path']);
+		}
+	}
+
+	return update_meta_value('tales',json_encode($new_data));
+}
+
+//Add tale image (18-03-2021)
+function add_tale_image($data)
+{
+	$images_data = get_meta_value('tales');
+	$final_data = $images_data ? json_decode($images_data,true) : array();
+	$img_id = "TALE_".generateRandomString(4);
+	array_push($final_data,array("id"=>$img_id,"img_path"=>makesafe($data['img_path']),"thumb_img_path"=>makesafe($data['thumb_img_path'])));
+	
+	if(update_meta_value('tales',json_encode($final_data)))
+		return $img_id;
+	else
+		return false;
 }
 ?>

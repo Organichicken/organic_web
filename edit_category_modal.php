@@ -62,7 +62,7 @@ $cat_data = get_categories_data($cust_id)[0];
 
 <script>
 $(document).ready(function (){
-	$('[data-toggle="tooltip"]').tooltip()
+	$('[data-toggle="tooltip"]').tooltip();
 	
 	var edit_cat_image = new KTImageInput('edit_cat_image_div');
 

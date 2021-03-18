@@ -79,6 +79,12 @@
 						<span class="menu-text">Offers</span>
 					</a>
 				</li>
+				<li class="menu-item <?php if($current_page === 'settings') echo "menu-item-active"; ?>" aria-haspopup="true">
+					<a href="settings.php" class="menu-link">
+						<span class="icon-xl pr-2 fas fa-cogs"></span>
+						<span class="menu-text">Settings</span>
+					</a>
+				</li>
 			</ul>
 			<!--end::Menu Nav-->
 		</div>

@@ -331,4 +331,78 @@ else if(isset($_POST['action']) && $_POST['action'] == 'delete_offer'){
 	else 
 		echo json_encode(array("status"=>"fail"));
 }
+else if(isset($_POST['action']) && $_POST['action'] == 'load_video_links'){
+	$video_data = get_meta_value('video_links');
+	$final_data = $video_data ? json_decode($video_data,true) : array();	
+	echo json_encode(array("data"=>$final_data));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_edit_video'){
+	if($_POST['video_action'] == 'add_video_link' && add_video($_POST))
+		echo json_encode(array("status"=>"success"));
+	else if($_POST['video_action'] == 'edit_video_link' && update_video($_POST))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_video'){
+	if(!empty($_POST['id']) && delete_video($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_slider_image'){
+	if(!empty($_POST['id']) && delete_slider_image($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_new_slider_image'){
+	$target_dir = "uploads/slider_images/";
+
+	$img_name = explode(".", $_FILES["slider_image"]["name"]);
+	$encrypt_name = strtolower(str_replace(' ', '_',makesafe($img_name[0]))).'_'.time();
+	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
+	$target_resize_file = $target_dir.$encrypt_name."_thumb".'.'.end($img_name);
+
+	$data = $_POST;
+	$data['img_path'] = '';
+	//Code will move file to local folder
+	if(move_uploaded_file($_FILES['slider_image']['tmp_name'],$target_file)){
+		$data['img_path'] = $encrypt_name.'.'.end($img_name);		
+	}
+	if($id = add_slider_image($data))
+		echo json_encode(array("status"=>"success","img_path"=>$data['img_path'],"id"=>$id));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_tale_image'){
+	if(!empty($_POST['id']) && delete_tale_image($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_new_tale_image'){
+	$target_dir = "uploads/tales/";
+
+	$img_name = explode(".", $_FILES["tale_image"]["name"]);
+	$encrypt_name = strtolower(str_replace(' ', '_',makesafe($img_name[0]))).'_'.time();
+	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
+	$target_resize_file = $target_dir.$encrypt_name."_thumb".'.'.end($img_name);
+
+	$data = $_POST;
+	$data['img_path'] = '';
+	$data['thumb_img_path'] = '';
+	//Code will move file to local folder
+	if(move_uploaded_file($_FILES['tale_image']['tmp_name'],$target_file)){
+		$data['img_path'] = $encrypt_name.'.'.end($img_name);
+		include ("smart_resize_image.php");
+		smart_resize_image($target_file , null, 150 , 150 , 100 , $target_resize_file , false , false ,50 );
+		move_uploaded_file($_FILES['tale_image']['tmp_name'],$target_resize_file);
+		$data['thumb_img_path'] = $encrypt_name."_thumb".'.'.end($img_name);
+	}
+	if($id = add_tale_image($data))
+		echo json_encode(array("status"=>"success","img_path"=>$data['img_path'],"id"=>$id));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
 ?>
