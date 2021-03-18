@@ -105,7 +105,7 @@
 		}
 		$(document).ready(() => {			
 			setInterval(async () => {
-				var ordr_cnt = check_for_new_orders();				
+				// var ordr_cnt = check_for_new_orders();				
 			}, 5000);
 		});
 		</script>
