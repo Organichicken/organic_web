@@ -480,7 +480,7 @@ function get_offers_data($id = null){
 	if($id && is_numeric($id)){
 		$query = " WHERE offer_id = '".$id."'";
 	}
-	$res = db_query("SELECT * FROM `offers` ".$query);
+	$res = db_query("SELECT * FROM `offers` ".$query." ORDER BY offer_start DESC ");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -638,5 +638,38 @@ function add_tale_image($data)
 		return $img_id;
 	else
 		return false;
+}
+
+//Get items based on given category (20-03-2021)
+function get_items_by_category($cat_id)
+{
+	$items_data = array();
+
+	// $res = db_query("SELECT * FROM `items` WHERE `category_id` = ".$cat_id);
+	$res = db_query("SELECT items.*,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE items.category_id = ".$cat_id);
+	
+	while($row = db_fetch_assoc($res))
+	{
+		$items_data[] = $row;
+	}
+	return $items_data;
+}
+
+
+//Retrive all/given items from DB
+function get_items_data_for_api($id = null){
+	$items_data = array();
+	$query = "";
+	
+	if($id && is_numeric($id)){
+		$query = " WHERE items.item_id = '".$id."'";
+	}
+	$res = db_query("SELECT items.*,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id ".$query);
+	
+	while($row = db_fetch_assoc($res))
+	{
+		$items_data[] = $row;
+	}
+	return $items_data;
 }
 ?>
