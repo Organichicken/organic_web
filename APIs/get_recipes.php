@@ -18,18 +18,6 @@ if(!empty($_POST['recipe_id']) && is_numeric($_POST['recipe_id']))
     $resp['body'] = get_recipes_data(makesafe($_POST['recipe_id']));
 else
     $resp['body'] = get_recipes_data();
-/* if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
-    $resp['status'] = 200;
-    $resp['message'] = "success";
-    if(!empty($_POST['recipe_id']) && is_numeric($_POST['recipe_id']))
-        $resp['body'] = get_recipes_data(makesafe($_POST['recipe_id']));
-    else
-        $resp['body'] = get_recipes_data();
-}else{
-    $resp['status'] = 404;
-    $resp['message'] = "invalid user";
-    $resp['body'] = array();
-} */
 
 echo json_encode($resp);
 ?>

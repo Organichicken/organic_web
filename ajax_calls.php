@@ -234,6 +234,22 @@ else if(isset($_POST['action']) && $_POST['action'] == 'add_new_recipe'){
 	if(move_uploaded_file($_FILES['recipe_image']['tmp_name'],$target_file)){
 		$data['img_path'] = $encrypt_name.'.'.end($img_name);		
 	}
+	//Build Ingrediants array 
+	$ingrediants = array();
+	for ($i=0; $i < $_POST['ing_cnt']; $i++) {
+		if(!empty($_POST['ingrediant_name_'.$i]) && !empty($_POST['ingrediant_quantity_'.$i]))
+			$ingrediants[] = array("name"=> makesafe($_POST['ingrediant_name_'.$i]), "quantity"=> makesafe($_POST['ingrediant_quantity_'.$i]) );
+	}
+	$data['ingrediants'] = json_encode($ingrediants);
+	//Build Recipe Steps array
+	$recipe_steps = array();
+	for ($i=1; $i < $_POST['recipe_step_cnt']; $i++) {
+		if(!empty($_POST['recipe_step_'.$i]))
+			$recipe_steps[] = makesafe($_POST['recipe_step_'.$i]);
+	}
+	$data['recipe_steps'] = json_encode($recipe_steps);
+	// echo json_encode($data);
+	// exit;
 	if(add_new_recipe($data))
 		echo json_encode(array("status"=>"success"));
 	else 
@@ -254,6 +270,21 @@ else if(isset($_POST['action']) && $_POST['action'] == 'edit_recipe')
 	
 	$data = $_POST;
 	$data['img_path'] = '';
+
+	$ingrediants = array();
+	for ($i=0; $i < $_POST['ing_cnt']; $i++) {
+		if(!empty($_POST['ingrediant_name_'.$i]) && !empty($_POST['ingrediant_quantity_'.$i]))
+			$ingrediants[] = array("name"=> makesafe($_POST['ingrediant_name_'.$i]), "quantity"=> makesafe($_POST['ingrediant_quantity_'.$i]) );
+	}
+	$data['ingrediants'] = json_encode($ingrediants);
+
+	//Build Recipe Steps array
+	$recipe_steps = array();
+	for ($i=1; $i <= $_POST['recipe_step_cnt']; $i++) {
+		if(!empty($_POST['recipe_step_'.$i]))
+			$recipe_steps[] = makesafe($_POST['recipe_step_'.$i]);
+	}
+	$data['recipe_steps'] = json_encode($recipe_steps);
 
 	if((int)$_POST['is_image_changed'] !== 1){
 		if(update_recipe($data,false)){//For updating recipe

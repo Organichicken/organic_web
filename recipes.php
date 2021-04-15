@@ -3,6 +3,12 @@ $current_page = "recipes";
 include('header.php');
 $all_items = get_items_data('');
 ?>
+<style>
+.ingrediants_table td,.ingrediants_table th {
+    vertical-align: middle !important;
+    text-align : center;
+}
+</style>
 <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <div class="container-fluid">
     <div class="row">
@@ -90,7 +96,93 @@ $all_items = get_items_data('');
                                     <span class="form-text text-muted">Default empty input with blank image</span>
                                 </div>
                             </div>
-                        </div>                        
+                        </div>
+                        <div class="col-12">
+                            <div class="accordion accordion-solid accordion-toggle-plus" id="accordion_settings">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title collapsed" data-toggle="collapse" data-target="#ingrediants">
+                                            <i class="fas fa-hamburger"></i> Ingrediants
+                                        </div>
+                                    </div>
+                                    <div id="ingrediants" class="collapse" data-parent="#accordion_settings">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <table class="table ingrediants_table" id="ingrediants_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Ingrediant Name</th>
+                                                            <th>Ingrediant Quantity</th>
+                                                            <th>
+                                                                <a href="#" class="btn btn-icon btn-circle btn-light-skype" id="add_ingrediant_btn">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input class="form-control" type="text" name="ingrediant_name_0" placeholder="Enter name">
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control" type="text" name="ingrediant_quantity_0" placeholder="Enter quantity">
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_ingrediant">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title collapsed" data-toggle="collapse" data-target="#recipe_steps">
+                                            <i class="fas fa-pizza-slice"></i> Recipe Steps
+                                        </div>
+                                    </div>
+                                    <div id="recipe_steps" class="collapse" data-parent="#accordion_settings">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table ingrediants_table" id="recipe_method_table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th style="width:90%;">Steps</th>
+                                                            <th>
+                                                                <a href="#" class="btn btn-icon btn-circle btn-light-skype" id="add_recipe_step_btn">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <span>1</span>
+                                                            </td>
+                                                            <td>
+                                                                <textarea class="form-control" type="text" name="recipe_step_1" placeholder="Enter step description" rows="1"></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_recipe_step">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                  
                         <div class="col-12 mt-3">
                             <div class="form-group text-center">
                                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
@@ -120,7 +212,7 @@ $all_items = get_items_data('');
 <?php include('footer.php'); ?>
 <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
-    var recipe_table;
+    var recipe_table,ing_cnt = 1, rcp_step_cnt = 2;
     var edit_recipe = function (id){
         $('#edit_recipe_modal').modal('show');
         $.ajax({
@@ -134,6 +226,7 @@ $all_items = get_items_data('');
             }
         })
     }
+    
     var delete_recipe = function (id){        
         Swal.fire({
             title: "Are you sure want to delete this recipe?",icon: "warning",
@@ -162,6 +255,11 @@ $all_items = get_items_data('');
         });
     }
 
+    var set_recipe_steps_order = function (id) {
+        $('#'+id+' tbody tr td:first-child').each(function (i){
+            $(this).html(i+1);
+        });
+    }
     $(document).ready(function (){
         $('#item_dropdown').select2();
 		var recipe_image = new KTImageInput('recipe_image_div');
@@ -208,6 +306,49 @@ $all_items = get_items_data('');
             ]
         });
         
+        $(document).on("click", "#add_ingrediant_btn", function () {
+            if($('#ingrediants_table tbody tr').length > 10) return false;
+            $('#ingrediants_table tbody').append(`<tr>
+                <td>
+                    <input class="form-control" type="text" name="ingrediant_name_${ing_cnt}" placeholder="Enter name">
+                </td>
+                <td>
+                    <input class="form-control" type="text" name="ingrediant_quantity_${ing_cnt}" placeholder="Enter quantity">
+                </td>
+                <td>
+                    <a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_ingrediant">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>`);
+            ing_cnt++;
+        });
+        $(document).on("click", ".delete_ingrediant", function () {
+            $(this).closest('tr').remove();
+        });
+
+        $(document).on("click", "#add_recipe_step_btn", function () {
+            if($('#recipe_method_table tbody tr').length > 10) return false;
+            $('#recipe_method_table tbody').append(`<tr>
+                <td>
+                    <span>${rcp_step_cnt}</span>
+                </td>
+                <td>
+                    <textarea class="form-control" type="text" name="recipe_step_${rcp_step_cnt}" placeholder="Enter step description" rows="1"></textarea>
+                </td>
+                <td>
+                    <a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_recipe_step">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>`);
+            rcp_step_cnt++;
+            set_recipe_steps_order('recipe_method_table');
+        });
+        $(document).on("click", ".delete_recipe_step", function () {
+            $(this).closest('tr').remove();
+            set_recipe_steps_order('recipe_method_table');
+        });
         $(document).on("dblclick", "#recipe_table tbody tr", function () {
             index = $(this).attr('id');
             if(!index) return false;
@@ -219,7 +360,7 @@ $all_items = get_items_data('');
             KTApp.block("#add_new_recipe_form", { overlayColor: "#000000", state: "danger", message: "Saving..."})
             $('#add_new_recipe_form').ajaxSubmit({
                 url:"ajax_calls.php",dataType:"json",type:"POST",
-                data:{"action" : "add_new_recipe"},
+                data:{"action" : "add_new_recipe","ing_cnt" : ing_cnt, "recipe_step_cnt" : rcp_step_cnt},
                 success:function (resp){
                     if(resp.status === 'success'){
                         toastr["success"]("", "New recipe added successfully");
@@ -244,6 +385,9 @@ $all_items = get_items_data('');
             $('#add_new_recipe_form')[0].reset();
             $('#remove_cat_image').trigger('click');
             $('#add_recipe_btn').removeAttr('disabled');
+            ing_cnt = 0;
+            $('#ingrediants_table tbody').html('');
+            $('#add_ingrediant_btn').trigger('click');
         })
     })
 </script>

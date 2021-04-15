@@ -248,7 +248,7 @@ function delete_category($id)
 // Add new item (23-01-2021)
 function add_new_item($data)		
 {
-	$q = "INSERT INTO `items`(`item_name`, `item_image`, `item_description`, `ingrediants`, `category_id`, `available_quantity`, `no_of_pieces`, `price_per_unit`, `gross_weight`, `net_weight`, `weight_type`, `serves`, `discount_price`, `in_stock`, `created_at`) VALUES ('".makesafe($data['item_name'])."','".makesafe($data['img_path'])."','".makesafe($data['item_description'])."','".makesafe($data['ingrediants'])."','".makesafe($data['category'])."','".makesafe($data['available_quantity'])."','".makesafe($data['no_of_pieces'])."','".makesafe($data['price_per_unit'])."','".makesafe($data['gross_weight'])."','".makesafe($data['net_weight'])."','".makesafe($data['weight_type'])."','".makesafe($data['serves'])."','".makesafe($data['discount_price'])."','".makesafe($data['in_stock'])."','".get_current_time()."')";
+	$q = "INSERT INTO `items`(`item_name`, `item_image`, `item_description`, `ingrediants`, `category_id`, `available_quantity`, `no_of_pieces`, `price_per_unit`, `gross_weight`, `net_weight`, `weight_type`, `serves`, `discount_price`, `in_stock`, `created_at`, `is_trending`) VALUES ('".makesafe($data['item_name'])."','".makesafe($data['img_path'])."','".makesafe($data['item_description'])."','".makesafe($data['ingrediants'])."','".makesafe($data['category'])."','".makesafe($data['available_quantity'])."','".makesafe($data['no_of_pieces'])."','".makesafe($data['price_per_unit'])."','".makesafe($data['gross_weight'])."','".makesafe($data['net_weight'])."','".makesafe($data['weight_type'])."','".makesafe($data['serves'])."','".makesafe($data['discount_price'])."','".makesafe($data['in_stock'])."','".get_current_time()."','".makesafe($data['trending_now'])."')";
 	
 	if(db_query($q)) return true;
 	
@@ -278,7 +278,7 @@ function update_item($data,$is_update_img)
 		$update_img = ",`item_image`='".makesafe($data['img_path'])."'";
 	}
 	
-	$q = "UPDATE `items` SET `item_name`='".makesafe($data['item_name'])."',`item_description`='".makesafe($data['item_description'])."',`category_id`='".makesafe($data['edit_category'])."',`available_quantity`='".makesafe($data['available_quantity'])."',`no_of_pieces`='".makesafe($data['no_of_pieces'])."',`price_per_unit`='".makesafe($data['price_per_unit'])."',`gross_weight`='".makesafe($data['gross_weight'])."',`net_weight`='".makesafe($data['net_weight'])."',`weight_type`='".makesafe($data['weight_type'])."',`serves`='".makesafe($data['serves'])."',`discount_price`='".makesafe($data['discount_price'])."',`in_stock`='".makesafe($data['in_stock'])."' ".$update_img.",`created_at`='".get_current_time()."' WHERE `item_id` = '".makesafe($data['item_id'])."'";
+	$q = "UPDATE `items` SET `item_name`='".makesafe($data['item_name'])."',`item_description`='".makesafe($data['item_description'])."',`category_id`='".makesafe($data['edit_category'])."',`available_quantity`='".makesafe($data['available_quantity'])."',`no_of_pieces`='".makesafe($data['no_of_pieces'])."',`price_per_unit`='".makesafe($data['price_per_unit'])."',`gross_weight`='".makesafe($data['gross_weight'])."',`net_weight`='".makesafe($data['net_weight'])."',`weight_type`='".makesafe($data['weight_type'])."',`serves`='".makesafe($data['serves'])."',`discount_price`='".makesafe($data['discount_price'])."',`in_stock`='".makesafe($data['in_stock'])."' ".$update_img.",`created_at`='".get_current_time()."',`is_trending`='".makesafe($data['trending_now'])."' WHERE `item_id` = '".makesafe($data['item_id'])."'";
 	if(db_query($q)) return true;		
 	
 	return false;		
@@ -342,6 +342,8 @@ function get_recipes_data($id = null){
 	
 	while($row = db_fetch_assoc($res))
 	{
+		$row['ingrediants'] = !empty($row['ingrediants']) ? json_decode($row['ingrediants'],true) : array();
+		$row['method'] = !empty($row['method']) ? json_decode($row['method'],true) : array();
 		$recipes_data[] = $row;
 	}
 	return $recipes_data;
@@ -350,7 +352,7 @@ function get_recipes_data($id = null){
 // Add new recipe (13-02-2021)
 function add_new_recipe($data)		
 {		
-	$q = "INSERT INTO recipe (`recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `created_at`) VALUES('".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".get_current_time()."')";
+	$q = "INSERT INTO recipe (`recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `ingrediants`, `method`, `created_at`) VALUES('".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".$data['ingrediants']."','".$data['recipe_steps']."','".get_current_time()."')";
 	
 	if(db_query($q)) return true;		
 	
@@ -381,7 +383,7 @@ function update_recipe($data,$is_update_img)
 		$update_img = ",`recipe_image`='".makesafe($data['img_path'])."'";
 	}
 
-	$q = "UPDATE `recipe` SET `recipe_name`= '".makesafe($data['recipe_name'])."',`recipe_description`= '".makesafe($data['recipe_description'])."',`item_id`='".makesafe($data['item_id'])."',`created_at`='".get_current_time()."' ".$update_img." WHERE `recipe_id` = '".makesafe($data['recipe_id'])."'";
+	$q = "UPDATE `recipe` SET `recipe_name`= '".makesafe($data['recipe_name'])."',`recipe_description`= '".makesafe($data['recipe_description'])."',`item_id`='".makesafe($data['item_id'])."',`ingrediants`='".$data['ingrediants']."',`method`='".$data['recipe_steps']."',`created_at`='".get_current_time()."' ".$update_img." WHERE `recipe_id` = '".makesafe($data['recipe_id'])."'";
 
 	if(db_query($q)){
 		return true;
@@ -491,7 +493,7 @@ function get_offers_data($id = null){
 
 // Add new offer (11-03-2021)
 function add_new_offer($data){
-	$q = "INSERT INTO `offers` (`type`, `offer_start`, `offer_end`, `status`, `description`, `code`, `min_order_price`, `offer_price`, `updated_at`) VALUES ('".makesafe($data['offer_type'])."','".makesafe(set_date($data['offer_start']))."','".makesafe(set_date($data['offer_end']))."','".makesafe($data['is_active'])."','".makesafe($data['offer_description'])."','".strtoupper(makesafe($data['offer_code']))."','".makesafe($data['min_order_price'])."','".makesafe($data['offer_price'])."','".get_current_time()."')";
+	$q = "INSERT INTO `offers` (`type`, `offer_start`, `offer_end`, `status`, `description`, `code`, `min_order_price`, `offer_price`, `updated_at`, `discount`) VALUES ('".makesafe($data['offer_type'])."','".makesafe(set_date($data['offer_start']))."','".makesafe(set_date($data['offer_end']))."','".makesafe($data['is_active'])."','".makesafe($data['offer_description'])."','".strtoupper(makesafe($data['offer_code']))."','".makesafe($data['min_order_price'])."','".makesafe($data['offer_price'])."','".get_current_time()."','".makesafe($data['discount_value'])."')";
 
 	if(db_query($q)) return true;
 	
@@ -514,7 +516,7 @@ function delete_offer($id)
 
 // Add new offer (13-03-2021)
 function update_offer($data){
-	$q = "UPDATE `offers` SET `type`= '".makesafe($data['offer_type'])."',`offer_start`= '".makesafe(set_date($data['offer_start']))."',`offer_end`='".makesafe(set_date($data['offer_end']))."',`code`='".strtoupper(makesafe($data['offer_code']))."',`description`='".makesafe($data['offer_description'])."',`min_order_price`='".makesafe($data['min_order_price'])."',`offer_price`='".makesafe($data['offer_price'])."',`status`='".makesafe($data['is_active'])."',`updated_at`='".get_current_time()."' WHERE `offer_id` = '".makesafe($data['offer_id'])."'";
+	$q = "UPDATE `offers` SET `type`= '".makesafe($data['offer_type'])."',`offer_start`= '".makesafe(set_date($data['offer_start']))."',`offer_end`='".makesafe(set_date($data['offer_end']))."',`code`='".strtoupper(makesafe($data['offer_code']))."',`description`='".makesafe($data['offer_description'])."',`min_order_price`='".makesafe($data['min_order_price'])."',`offer_price`='".makesafe($data['offer_price'])."',`discount`='".makesafe($data['discount_value'])."',`status`='".makesafe($data['is_active'])."',`updated_at`='".get_current_time()."' WHERE `offer_id` = '".makesafe($data['offer_id'])."'";
 
 	if(db_query($q)) return true;
 	

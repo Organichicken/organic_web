@@ -50,6 +50,98 @@ $all_items = get_items_data('');
 				<textarea class="form-control" type="text" name="recipe_description" placeholder="Enter recipe description"><?php echo $recipe_data['recipe_description']; ?></textarea>
 			</div>
 		</div>
+		<div class="col-12">
+			<div class="accordion accordion-solid accordion-toggle-plus" id="accordion_settings">
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title collapsed" data-toggle="collapse" data-target="#ingrediants">
+							<i class="fas fa-hamburger"></i> Ingrediants
+						</div>
+					</div>
+					<div id="ingrediants" class="collapse" data-parent="#accordion_settings">
+						<div class="card-body">
+							<div class="row">
+								<table class="table ingrediants_table" id="edit_ingrediants_table">
+									<thead>
+										<tr>
+											<th>Ingrediant Name</th>
+											<th>Ingrediant Quantity</th>
+											<th>
+												<a href="#" class="btn btn-icon btn-circle btn-light-skype" id="edit_add_ingrediant_btn">
+													<i class="fas fa-plus"></i>
+												</a>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php
+										$ingrediants_data = $recipe_data["ingrediants"];
+										foreach ($ingrediants_data as $i => $value) {
+											echo '<tr>
+													<td>
+														<input class="form-control" type="text" name="ingrediant_name_'.$i.'" placeholder="Enter name" value="'.$value['name'].'">
+													</td>
+													<td>
+														<input class="form-control" type="text" name="ingrediant_quantity_'.$i.'" placeholder="Enter quantity" value="'.$value['quantity'].'">
+													</td>
+													<td>
+														<a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_ingrediant">
+															<i class="fas fa-trash"></i>
+														</a>
+													</td>
+												</tr>';
+										} ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<div class="card-title collapsed" data-toggle="collapse" data-target="#recipe_steps">
+							<i class="fas fa-pizza-slice"></i> Recipe Steps
+						</div>
+					</div>
+					<div id="recipe_steps" class="collapse" data-parent="#accordion_settings">
+						<div class="card-body">
+							<div class="row">
+								<table class="table ingrediants_table" id="edit_recipe_steps">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th style="width:90%;">Steps</th>
+											<th>
+												<a href="#" class="btn btn-icon btn-circle btn-light-skype" id="edit_add_recipe_step_btn">
+													<i class="fas fa-plus"></i>
+												</a>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php
+										$recipe_steps_data = $recipe_data["method"];
+										foreach ($recipe_steps_data as $i => $value) {
+											echo '<tr>
+													<td>'.($i+1).'</td>
+													<td>
+														<input class="form-control" type="text" name="recipe_step_'.($i+1).'" placeholder="Enter quantity" value="'.$value.'">
+													</td>
+													<td>
+														<a href="#" class="btn btn-icon btn-circle btn-light-youtube edit_delete_recipe_step">
+															<i class="fas fa-trash"></i>
+														</a>
+													</td>
+												</tr>';
+										} ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="col-12 mt-3">
 			<div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
@@ -62,11 +154,13 @@ $all_items = get_items_data('');
 
 <script>
 $(document).ready(function (){
-	const categories = <?php echo json_encode($categories); ?>;
-	$('[data-toggle="tooltip"]').tooltip()
+	$('[data-toggle="tooltip"]').tooltip();
 	$('#edit_item').select2();
+	var edit_ing_cnt = '<?php echo count($ingrediants_data); ?>';
+	var edit_rcp_step_cnt = '<?php echo count($recipe_steps_data); ?>';
 	setTimeout(() => {
 		$('#edit_category').trigger('change');
+		$('#edit_add_ingrediant_btn,#edit_add_recipe_step_btn').trigger('click');
 	}, 100);	
 	var edit_recipe_image = new KTImageInput('edit_recipe_image_div');
 
@@ -78,11 +172,52 @@ $(document).ready(function (){
 		});
 	});
 
+	$(document).off("click", "#edit_add_ingrediant_btn").on("click", "#edit_add_ingrediant_btn", function (e) {
+		e.preventDefault();
+		if($('#edit_ingrediants_table tbody tr').length > 10) return false;
+		$('#edit_ingrediants_table tbody').append(`<tr>
+			<td>
+				<input class="form-control" type="text" name="ingrediant_name_${edit_ing_cnt}" placeholder="Enter name">
+			</td>
+			<td>
+				<input class="form-control" type="text" name="ingrediant_quantity_${edit_ing_cnt}" placeholder="Enter quantity">
+			</td>
+			<td>
+				<a href="#" class="btn btn-icon btn-circle btn-light-youtube edit_delete_recipe_step">
+					<i class="fas fa-trash"></i>
+				</a>
+			</td>
+		</tr>`);
+		edit_ing_cnt++;
+	});
+
+	$(document).off("click", "#edit_add_recipe_step_btn").on("click", "#edit_add_recipe_step_btn", function () {
+		if($('#edit_recipe_steps tbody tr').length > 10) return false;
+		edit_rcp_step_cnt++;
+		$('#edit_recipe_steps tbody').append(`<tr>
+			<td>
+				<span>${edit_rcp_step_cnt}</span>
+			</td>
+			<td>
+				<textarea class="form-control" type="text" name="recipe_step_${edit_rcp_step_cnt}" placeholder="Enter step description" rows="1"></textarea>
+			</td>
+			<td>
+				<a href="#" class="btn btn-icon btn-circle btn-light-youtube delete_recipe_step">
+					<i class="fas fa-trash"></i>
+				</a>
+			</td>
+		</tr>`);		
+		set_recipe_steps_order('edit_recipe_steps');
+	});
+	$(document).on("click", ".edit_delete_recipe_step", function () {
+		$(this).closest('tr').remove();
+		set_recipe_steps_order('edit_recipe_steps');
+	});
 	$('#edit_recipe_btn').click(() => {
 		KTApp.block("#edit_recipe_form", { overlayColor: "#000000", state: "danger", message: "Updating..."})
 		$('#edit_recipe_form').ajaxSubmit({
 			url:"ajax_calls.php",dataType:"json",type:"POST",
-			data:{"action" : "edit_recipe"},
+			data:{"action" : "edit_recipe","ing_cnt" : edit_ing_cnt,"recipe_step_cnt" : edit_rcp_step_cnt},
 			success:function (resp){
 				if(resp.status === 'success'){
 					toastr["success"]("", "Recipe updated successfully");
