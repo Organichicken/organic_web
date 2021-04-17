@@ -352,7 +352,7 @@ function get_recipes_data($id = null){
 // Add new recipe (13-02-2021)
 function add_new_recipe($data)		
 {		
-	$q = "INSERT INTO recipe (`recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `ingrediants`, `method`, `created_at`) VALUES('".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".$data['ingrediants']."','".$data['recipe_steps']."','".get_current_time()."')";
+	$q = "INSERT INTO recipe (`recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `serves`, `time`, `dish`, `ingrediants`, `method`, `created_at`) VALUES('".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".$data['serves']."','".$data['time']."','".$data['dish']."','".$data['ingrediants']."','".$data['recipe_steps']."','".get_current_time()."')";
 	
 	if(db_query($q)) return true;		
 	
@@ -383,7 +383,7 @@ function update_recipe($data,$is_update_img)
 		$update_img = ",`recipe_image`='".makesafe($data['img_path'])."'";
 	}
 
-	$q = "UPDATE `recipe` SET `recipe_name`= '".makesafe($data['recipe_name'])."',`recipe_description`= '".makesafe($data['recipe_description'])."',`item_id`='".makesafe($data['item_id'])."',`ingrediants`='".$data['ingrediants']."',`method`='".$data['recipe_steps']."',`created_at`='".get_current_time()."' ".$update_img." WHERE `recipe_id` = '".makesafe($data['recipe_id'])."'";
+	$q = "UPDATE `recipe` SET `recipe_name`= '".makesafe($data['recipe_name'])."',`recipe_description`= '".makesafe($data['recipe_description'])."',`item_id`='".makesafe($data['item_id'])."',`serves`='".makesafe($data['serves'])."',`time`='".makesafe($data['time'])."',`dish`='".makesafe($data['dish'])."',`ingrediants`='".$data['ingrediants']."',`method`='".$data['recipe_steps']."',`created_at`='".get_current_time()."' ".$update_img." WHERE `recipe_id` = '".makesafe($data['recipe_id'])."'";
 
 	if(db_query($q)){
 		return true;
@@ -475,12 +475,15 @@ function generateRandomString($length = 5) {
 }
 
 //Retrive all/given offer from DB(10-03-2021)
-function get_offers_data($id = null){
+function get_offers_data($id = null,$filter = null){
 	$offers_data = array();
 	$query = "";
 	
 	if($id && is_numeric($id)){
 		$query = " WHERE offer_id = '".$id."'";
+	}
+	if($filter){
+		$query = " WHERE status = '1'";
 	}
 	$res = db_query("SELECT * FROM `offers` ".$query." ORDER BY offer_start DESC ");
 	
@@ -673,5 +676,27 @@ function get_items_data_for_api($id = null){
 		$items_data[] = $row;
 	}
 	return $items_data;
+}
+
+//Retrive user cart details from DB
+function get_user_cart_data($user_id){
+	$cart_data = array();
+	
+	$res = db_query("SELECT c.`cart_id`,c.`item_id`, c.`quantity`,it.price_per_unit,it.discount_price,it.net_weight,it.item_name,it.item_image FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."'");
+	
+	while($row = db_fetch_assoc($res))
+	{
+		$cart_data[] = $row;
+	}
+	return $cart_data;
+}
+
+//Generate a unique ID for given item
+function generate_unique_id($label,$length = 5){
+	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","employee"=> "#OCEMP","referral"=> "#OCREF");
+	
+	if($label && $items_array[$label])
+		return $items_array[$label].generateRandomString($length);
+	return false;
 }
 ?>

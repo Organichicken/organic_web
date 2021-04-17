@@ -50,6 +50,24 @@ $all_items = get_items_data('');
 				<textarea class="form-control" type="text" name="recipe_description" placeholder="Enter recipe description"><?php echo $recipe_data['recipe_description']; ?></textarea>
 			</div>
 		</div>
+		<div class="col-md-4 col-lg-4 col-sm-12">
+			<div class="form-group">
+				<label for="">Serves</label>
+				<input class="form-control" type="number" name="serves" placeholder="Serves" value="<?php echo $recipe_data['serves']; ?>" min="0">
+			</div>
+		</div>
+		<div class="col-md-4 col-lg-4 col-sm-12">
+			<div class="form-group">
+				<label for="">Time</label>
+				<input class="form-control" type="text" value="<?php echo $recipe_data['time']; ?>" name="time" placeholder="Enter Time">
+			</div>
+		</div>
+		<div class="col-md-4 col-lg-4 col-sm-12">
+			<div class="form-group">
+				<label for="">Dish</label>
+				<input class="form-control" type="text" value="<?php echo $recipe_data['dish']; ?>" name="dish" placeholder="Enter dish">
+			</div>
+		</div>
 		<div class="col-12">
 			<div class="accordion accordion-solid accordion-toggle-plus" id="accordion_settings">
 				<div class="card">

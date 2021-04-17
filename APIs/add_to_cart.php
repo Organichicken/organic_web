@@ -14,7 +14,7 @@ $user_hash_key = db_escape($_POST['hash_key']);
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
     $resp['status'] = 200;
-    db_query("DELETE FROM `cart` WHERE `item_id` = '".db_escape($_POST['user_id'])."' AND `user_id` = '".db_escape($_POST['item_id'])."'");
+    db_query("DELETE FROM `cart` WHERE `item_id` = '".db_escape($_POST['item_id'])."' AND `user_id` = '".db_escape($_POST['user_id'])."'");
     if(db_query("INSERT INTO `cart`(`item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".db_escape($_POST['item_id'])."','".db_escape($_POST['user_id'])."','".db_escape($_POST['quantity'])."','".date('Y-m-d H:i:s')."')")){
         $resp['message'] = "successfully added to cart";
         $resp['body'] = array();
