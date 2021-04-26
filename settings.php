@@ -109,6 +109,25 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                         </div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title collapsed" data-toggle="collapse" data-target="#pincodes">
+                            <i class="fas fa-map"></i> Pincodes
+                        </div>
+                    </div>
+                    <div id="pincodes" class="collapse" data-parent="#accordion_settings">
+                        <div class="card-body">
+                             <div class="row">                     
+                                <!-- <div class="col-12 mb-3">
+                                    <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold" id="add_tale_image"><i class="fas fa-plus"></i> Add tale</button>
+                                </div> -->
+                                <div class="col-12">
+                                    <label for="">Available Pincodes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

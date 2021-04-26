@@ -159,7 +159,7 @@ function get_users_data($id = null){
 	$users_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE user_id = '".$id."'";
 	}
 	$res = db_query("SELECT * FROM `users` ".$query);
@@ -176,7 +176,7 @@ function get_categories_data($id = null){
 	$categories_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE category_id = '".$id."'";
 	}
 	$res = db_query("SELECT * FROM `categories` ".$query);
@@ -193,7 +193,7 @@ function get_items_data($id = null){
 	$items_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE item_id = '".$id."'";
 	}
 	$res = db_query("SELECT items.*,cat.category_name FROM `items` left outer join categories as cat ON cat.category_id = items.category_id ".$query);
@@ -208,7 +208,7 @@ function get_items_data($id = null){
 // Add new category (21-01-2021)
 function add_new_category($data)		
 {		
-	$q = "INSERT INTO categories (category_name,category_image,`quantity`, `weight_type`,created_at) VALUES('".makesafe($data['category_name'])."','".makesafe($data['img_path'])."','".makesafe($data['quantity'])."','".makesafe($data['weight_type'])."','".get_current_time()."')";
+	$q = "INSERT INTO categories (category_id,category_name,category_image,`quantity`, `weight_type`,created_at) VALUES('".makesafe(generate_unique_id('category',"5"))."','".makesafe($data['category_name'])."','".makesafe($data['img_path'])."','".makesafe($data['quantity'])."','".makesafe($data['weight_type'])."','".get_current_time()."')";
 	
 	if(db_query($q)) return true;		
 	
@@ -248,7 +248,7 @@ function delete_category($id)
 // Add new item (23-01-2021)
 function add_new_item($data)		
 {
-	$q = "INSERT INTO `items`(`item_name`, `item_image`, `item_description`, `ingrediants`, `category_id`, `available_quantity`, `no_of_pieces`, `price_per_unit`, `gross_weight`, `net_weight`, `weight_type`, `serves`, `discount_price`, `in_stock`, `created_at`, `is_trending`) VALUES ('".makesafe($data['item_name'])."','".makesafe($data['img_path'])."','".makesafe($data['item_description'])."','".makesafe($data['ingrediants'])."','".makesafe($data['category'])."','".makesafe($data['available_quantity'])."','".makesafe($data['no_of_pieces'])."','".makesafe($data['price_per_unit'])."','".makesafe($data['gross_weight'])."','".makesafe($data['net_weight'])."','".makesafe($data['weight_type'])."','".makesafe($data['serves'])."','".makesafe($data['discount_price'])."','".makesafe($data['in_stock'])."','".get_current_time()."','".makesafe($data['trending_now'])."')";
+	$q = "INSERT INTO `items`(`item_id`,`item_name`, `item_image`, `item_description`, `category_id`, `available_quantity`, `no_of_pieces`, `price_per_unit`, `gross_weight`, `net_weight`, `weight_type`, `serves`, `discount_price`, `in_stock`, `created_at`, `is_trending`) VALUES ('".makesafe(generate_unique_id('item',"5"))."','".makesafe($data['item_name'])."','".makesafe($data['img_path'])."','".makesafe($data['item_description'])."','".makesafe($data['category'])."','".makesafe($data['available_quantity'])."','".makesafe($data['no_of_pieces'])."','".makesafe($data['price_per_unit'])."','".makesafe($data['gross_weight'])."','".makesafe($data['net_weight'])."','".makesafe($data['weight_type'])."','".makesafe($data['serves'])."','".makesafe($data['discount_price'])."','".makesafe($data['in_stock'])."','".get_current_time()."','".makesafe($data['trending_now'])."')";
 	
 	if(db_query($q)) return true;
 	
@@ -289,7 +289,7 @@ function get_employees_data($id = null){
 	$employees_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE employee_id = '".$id."'";
 	}
 	$res = db_query("SELECT * FROM `employees` ".$query);
@@ -335,7 +335,7 @@ function get_recipes_data($id = null){
 	$recipes_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE recipe_id = '".$id."'";
 	}
 	$res = db_query("SELECT recipe.*,item.item_name FROM `recipe` left outer join items as item ON recipe.item_id = item.item_id ".$query);
@@ -352,7 +352,7 @@ function get_recipes_data($id = null){
 // Add new recipe (13-02-2021)
 function add_new_recipe($data)		
 {		
-	$q = "INSERT INTO recipe (`recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `serves`, `time`, `dish`, `ingrediants`, `method`, `created_at`) VALUES('".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".$data['serves']."','".$data['time']."','".$data['dish']."','".$data['ingrediants']."','".$data['recipe_steps']."','".get_current_time()."')";
+	$q = "INSERT INTO recipe (`recipe_id`, `recipe_name`, `recipe_description`, `recipe_image`, `item_id`, `serves`, `time`, `dish`, `ingrediants`, `method`, `created_at`) VALUES('".makesafe(generate_unique_id('recipe',"5"))."','".makesafe($data['recipe_name'])."','".makesafe($data['recipe_description'])."','".makesafe($data['img_path'])."','".makesafe($data['item_id'])."','".$data['serves']."','".$data['time']."','".$data['dish']."','".$data['ingrediants']."','".$data['recipe_steps']."','".get_current_time()."')";
 	
 	if(db_query($q)) return true;		
 	
@@ -396,11 +396,9 @@ function get_orders_data($id = null){
 	$orders_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE order_id = '".$id."'";
 	}
-	// echo "SELECT orders.*,od.* FROM `orders` left outer join order_details as od ON orders.order_id = od.order_id ".$query;
-	// $res = db_query("SELECT orders.*,od.* FROM `orders` left outer join order_details as od ON orders.order_id = od.order_id ".$query);
 	$res = db_query("SELECT * FROM `orders` ".$query." ORDER BY order_at DESC");
 	
 	while($row = db_fetch_assoc($res))
@@ -479,7 +477,7 @@ function get_offers_data($id = null,$filter = null){
 	$offers_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
+	if(!empty($id)){
 		$query = " WHERE offer_id = '".$id."'";
 	}
 	if($filter){
@@ -496,7 +494,7 @@ function get_offers_data($id = null,$filter = null){
 
 // Add new offer (11-03-2021)
 function add_new_offer($data){
-	$q = "INSERT INTO `offers` (`type`, `offer_start`, `offer_end`, `status`, `description`, `code`, `min_order_price`, `offer_price`, `updated_at`, `discount`) VALUES ('".makesafe($data['offer_type'])."','".makesafe(set_date($data['offer_start']))."','".makesafe(set_date($data['offer_end']))."','".makesafe($data['is_active'])."','".makesafe($data['offer_description'])."','".strtoupper(makesafe($data['offer_code']))."','".makesafe($data['min_order_price'])."','".makesafe($data['offer_price'])."','".get_current_time()."','".makesafe($data['discount_value'])."')";
+	$q = "INSERT INTO `offers` (`offer_id`, `type`, `offer_start`, `offer_end`, `status`, `description`, `code`, `min_order_price`, `offer_price`, `updated_at`, `discount`) VALUES ('".makesafe(generate_unique_id('offer',"5"))."','".makesafe($data['offer_type'])."','".makesafe(set_date($data['offer_start']))."','".makesafe(set_date($data['offer_end']))."','".makesafe($data['is_active'])."','".makesafe($data['offer_description'])."','".strtoupper(makesafe($data['offer_code']))."','".makesafe($data['min_order_price'])."','".makesafe($data['offer_price'])."','".get_current_time()."','".makesafe($data['discount_value'])."')";
 
 	if(db_query($q)) return true;
 	
@@ -551,7 +549,7 @@ function add_video($data)
 	$video_data = get_meta_value('video_links');
 	$final_data = $video_data ? json_decode($video_data,true) : array();
 
-	array_push($final_data,array("id"=>"VID_".generateRandomString(4),"name"=>makesafe($data['video_name']),"url"=>makesafe($data['video_url'])));
+	array_push($final_data,array("id"=>generate_unique_id("home_video"),"name"=>makesafe($data['video_name']),"url"=>makesafe($data['video_url'])));
 	
 	return update_meta_value('video_links',json_encode($final_data));
 }
@@ -606,7 +604,7 @@ function add_slider_image($data)
 {
 	$images_data = get_meta_value('slider_images');
 	$final_data = $images_data ? json_decode($images_data,true) : array();
-	$img_id = "IMG_".generateRandomString(4);
+	$img_id = generate_unique_id("slider_image");
 	array_push($final_data,array("id"=>$img_id,"img_path"=>makesafe($data['img_path'])));
 	
 	if(update_meta_value('slider_images',json_encode($final_data)))
@@ -636,7 +634,7 @@ function add_tale_image($data)
 {
 	$images_data = get_meta_value('tales');
 	$final_data = $images_data ? json_decode($images_data,true) : array();
-	$img_id = "TALE_".generateRandomString(4);
+	$img_id = generate_unique_id("tales");
 	array_push($final_data,array("id"=>$img_id,"img_path"=>makesafe($data['img_path']),"thumb_img_path"=>makesafe($data['thumb_img_path'])));
 	
 	if(update_meta_value('tales',json_encode($final_data)))
@@ -646,12 +644,14 @@ function add_tale_image($data)
 }
 
 //Get items based on given category (20-03-2021)
-function get_items_by_category($cat_id)
+function get_items_by_category($cat_id,$user_id = null)
 {
 	$items_data = array();
 
-	// $res = db_query("SELECT * FROM `items` WHERE `category_id` = ".$cat_id);
-	$res = db_query("SELECT items.*,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE items.category_id = ".$cat_id);
+	if(!empty($user_id))
+		$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE items.category_id = '".$cat_id."'");
+	else
+		$res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE items.category_id = '".$cat_id."'");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -662,14 +662,17 @@ function get_items_by_category($cat_id)
 
 
 //Retrive all/given items from DB
-function get_items_data_for_api($id = null){
+function get_items_data_for_api($id = null,$user_id = null){
 	$items_data = array();
 	$query = "";
 	
-	if($id && is_numeric($id)){
-		$query = " WHERE items.item_id = '".$id."'";
+	if(!empty($id)){
+		$query = " AND items.item_id = '".$id."'";
 	}
-	$res = db_query("SELECT items.*,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id ".$query);
+	if(!empty($user_id))
+		$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' ".$query);
+	else
+		$res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' ".$query);
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -682,7 +685,20 @@ function get_items_data_for_api($id = null){
 function get_user_cart_data($user_id){
 	$cart_data = array();
 	
-	$res = db_query("SELECT c.`cart_id`,c.`item_id`, c.`quantity`,it.price_per_unit,it.discount_price,it.net_weight,it.item_name,it.item_image FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."'");
+	$res = db_query("SELECT c.`cart_id`,c.`item_id`, c.`quantity`,it.price_per_unit,it.discount_price,it.net_weight,it.item_name,it.item_image FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."' ORDER BY it.item_name");
+	
+	while($row = db_fetch_assoc($res))
+	{
+		$cart_data[] = $row;
+	}
+	return $cart_data;
+}
+
+//Retrive user cart details from DB
+function get_user_cart_count($user_id){
+	$cart_data = array();
+	
+	$res = db_query("SELECT COUNT(*) FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."' ORDER BY it.item_name");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -693,10 +709,10 @@ function get_user_cart_data($user_id){
 
 //Generate a unique ID for given item
 function generate_unique_id($label,$length = 5){
-	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","employee"=> "#OCEMP","referral"=> "#OCREF");
+	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","employee"=> "#OCEMP","referral"=> "#OCREF","slider_image"=> "#OCSIM","home_video"=> "#OCHVI","tales"=>"#OCTAL","cart"=>"#OCCRT","address"=>"#OCADD");
 	
 	if($label && $items_array[$label])
-		return $items_array[$label].generateRandomString($length);
+		return $items_array[$label]."_".generateRandomString($length);
 	return false;
 }
 ?>

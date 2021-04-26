@@ -20,8 +20,8 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `otp` = '".$user_otp.
 			$user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'");
 			$is_new_user = "1";
 		}else{
-			$res = db_query("INSERT INTO `users`(`phone`, `password`, `active`, `is_member`, `created_at`) VALUES ('".$user_phone."','".md5($user_phone)."','1','0','".date('Y-m-d H:i:s')."')");
-			$user_id = db_insert_id();
+            $user_id = generate_unique_id("user");
+			$res = db_query("INSERT INTO `users`(`user_id`, `phone`, `password`, `active`, `is_member`, `created_at`) VALUES ('".$user_id."','".$user_phone."','".md5($user_phone)."','1','0','".date('Y-m-d H:i:s')."')");			
 			$is_new_user = "0";
 		}
 		

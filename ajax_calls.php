@@ -208,13 +208,6 @@ else if(isset($_POST['action']) && $_POST['action'] == 'load_recipes')
 	$data = get_recipes_data('');
 	
 	foreach($data as $row){
-		/* $temp_data = array();
-		$temp_data['DT_RowId'] = $row['category_id'];
-		$temp_data['category_id'] = $row['category_id'];
-		$temp_data['category_name'] = $row['category_name'];
-		$temp_data['category_image'] = $row['category_image'];
-		$temp_data['quantity'] = $row['quantity'];
-		$temp_data['weight_type'] = $row['weight_type'] === 'grams' ? 'Grams' : 'Kgs'; */
 		$row['DT_RowId'] = $row['recipe_id'];
 		$final_data[] = $row;
 	}

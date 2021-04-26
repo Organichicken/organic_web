@@ -65,25 +65,25 @@ $categories = get_categories_data('');
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Gross Weight</label>
-				<input class="form-control" type="number" id="gross_weight" name="gross_weight" placeholder="Gross Weight" value="<?php echo $item_data['gross_weight']; ?>">
+				<input class="form-control" type="number" id="gross_weight" name="gross_weight" placeholder="Gross Weight" value="<?php echo $item_data['gross_weight']; ?>" min="0">
 			</div>
 		</div>
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Net Weight</label>
-				<input class="form-control" type="number" id="net_weight" name="net_weight" placeholder="Net Weight" value="<?php echo $item_data['net_weight']; ?>">
+				<input class="form-control" type="number" id="net_weight" name="net_weight" placeholder="Net Weight" value="<?php echo $item_data['net_weight']; ?>" min="0">
 			</div>
 		</div>
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Price per unit</label>
-				<input class="form-control" type="number" id="price_per_unit" name="price_per_unit" placeholder="Price per unit" value="<?php echo $item_data['price_per_unit']; ?>">
+				<input class="form-control" type="number" id="price_per_unit" name="price_per_unit" placeholder="Price per unit" value="<?php echo $item_data['price_per_unit']; ?>" min="0">
 			</div>
 		</div>					
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Discount Price</label>
-				<input class="form-control" type="number" id="discount_price" name="discount_price" placeholder="Discount Price" value="<?php echo $item_data['discount_price']; ?>">
+				<input class="form-control" type="number" id="discount_price" name="discount_price" placeholder="Discount Price" value="<?php echo $item_data['discount_price']; ?>" min="0">
 			</div>
 		</div>				
 		<div class="col-md-3 col-lg-3 col-sm-12">
@@ -95,7 +95,7 @@ $categories = get_categories_data('');
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Serves</label>
-				<input class="form-control" type="number" id="serves" name="serves" placeholder="Serves"  value="<?php echo $item_data['serves']; ?>">
+				<input class="form-control" type="number" id="serves" name="serves" placeholder="Serves"  value="<?php echo $item_data['serves']; ?>" min="0">
 			</div>
 		</div>
 		<div class="col-md-3 col-lg-3 col-sm-12">
@@ -110,14 +110,15 @@ $categories = get_categories_data('');
 		</div>			
 		<div class="col-md-3 col-lg-3 col-sm-12 my-auto">
 			<div class="form-group mt-5">
-				<label class="checkbox"><input type="checkbox" name="in_stock" value="1" <?php echo (int)$item_data['in_stock'] === 1 ? "checked":""; ?> /><span></span> &nbsp;In Stock</label>
+				<label class="checkbox"><input type="checkbox" name="in_stock" value="1" <?php echo (int)$item_data['in_stock'] == 1 ? "checked":""; ?> /><span></span> &nbsp;In Stock</label>
+				<label class="checkbox"><input type="checkbox" name="trending_now" value="1" <?php echo (int)$item_data['is_trending'] == 1 ? "checked":""; ?>/><span></span> &nbsp;Trending Now</label>
 			</div>
 		</div>
 		<div class="col-12 mt-3">
 			<!-- <label for="" class="text-warning"><i class="fas fa-exclamation-triangle text-warning"></i> All weight are in grams only</label> -->
 			<div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-				<button type="button" onclick="delete_item(<?php echo $item_data['item_id']; ?>)" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
+				<button type="button" onclick="delete_item('<?php echo $item_data['item_id']; ?>')" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
                 <button type="button" class="btn btn-success" id="edit_item_btn"><i class="fas fa-check"></i> Update</button>                
             </div>
 		</div>

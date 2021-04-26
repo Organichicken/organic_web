@@ -113,7 +113,7 @@ $categories = get_categories_data('');
                             <div class="col-md-3 col-lg-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Net Weight</label>
-                                    <input class="form-control" type="number" id="net_weight" name="net_weight" placeholder="Net Weight" value="0">
+                                    <input class="form-control" type="number" id="net_weight" name="net_weight" placeholder="Net Weight" value="0" min="0">
                                 </div>
                             </div>
                             <div class="col-md-3 col-lg-3 col-sm-12">
@@ -128,25 +128,25 @@ $categories = get_categories_data('');
                             <div class="col-md-3 col-lg-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Price per unit</label>
-                                    <input class="form-control" type="number" id="price_per_unit" name="price_per_unit" placeholder="Price per unit" value="0.0">
+                                    <input class="form-control" type="number" id="price_per_unit" name="price_per_unit" placeholder="Price per unit" value="0.0" min="0">
                                 </div>
                             </div>					
                             <div class="col-md-3 col-lg-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Discount Price</label>
-                                    <input class="form-control" type="number" id="discount_price" name="discount_price" placeholder="Discount Price" value="0.0">
+                                    <input class="form-control" type="number" id="discount_price" name="discount_price" placeholder="Discount Price" value="0.0" min="0">
                                 </div>
                             </div>				
                             <div class="col-md-3 col-lg-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="">No.of pieces</label>
-                                    <input class="form-control" type="number" id="no_of_pieces" name="no_of_pieces" placeholder="No.of pieces" value="0">
+                                    <input class="form-control" type="number" id="no_of_pieces" name="no_of_pieces" placeholder="No.of pieces" value="0" min="0">
                                 </div>
                             </div>				
                             <div class="col-md-3 col-lg-3 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Serves</label>
-                                    <input class="form-control" type="number" id="serves" name="serves" placeholder="Serves" value="0">
+                                    <input class="form-control" type="number" id="serves" name="serves" placeholder="Serves" value="0" min="0">
                                 </div>
                             </div>				
                             <div class="col-md-3 col-lg-3 col-sm-12">
@@ -162,8 +162,10 @@ $categories = get_categories_data('');
                             <div class="col-md-3 col-lg-3 col-sm-12 my-auto">
                                 <div class="form-group mt-5">
                                     <label class="checkbox"><input type="checkbox" name="in_stock" value="1" /><span></span> &nbsp;In Stock</label>
+									<label class="checkbox"><input type="checkbox" name="trending_now" value="1" /><span></span> &nbsp;Trending Now</label>
                                 </div>
                             </div>
+							
                             <div class="col-12 mt-3">
                                 <!-- <label for="" class="text-warning"><i class="fas fa-exclamation-triangle text-warning"></i> All weight are in grams only</label> -->
                                 <div class="form-group text-center">
@@ -276,6 +278,12 @@ $categories = get_categories_data('');
                 "columnDefs": [
                     {"className": "dt-center", "targets": [0]},
                     {
+                        render: function(data, type, row, meta) {
+                            return type == 'display' ? meta.row + 1 : data;
+                        },orderable: false,
+                        "targets": 0
+                    },
+                    {
                         "render": function ( data, type, row ) {                   
                             return +row['in_stock'] === 1 ? '<i class="fas fa-check-square text-primary"></i>' : '<i class="fas fa-square"></i>';
                         },"targets": 8
@@ -283,7 +291,7 @@ $categories = get_categories_data('');
                 ],
 				"columns": item_cols,
                 "order": [
-                    [0, "asc"]
+                    // [0, "asc"]
                 ]
             });
 			

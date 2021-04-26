@@ -3,7 +3,6 @@ include('lib.php');
 $offer_id = makesafe($_POST['id']);
 $offer_data = get_offers_data($offer_id)[0];
 $date = "DD/MM/YYYY hh:mm:ss A";
-// echo json_encode($offer_data);
 ?>
 <form class="pl-3 pr-3" id="edit_offer_form" enctype="multipart/form-data" method="POST">
 	<input class="form-control" type="hidden" name="offer_id" value="<?php echo $offer_data['offer_id']; ?>">
@@ -13,7 +12,7 @@ $date = "DD/MM/YYYY hh:mm:ss A";
 				<label for="offername">Offer Type</label>
 				<select class="form-control" name="offer_type">
 					<option value="">Select offer type</option>
-					<option value="coupon" <?php if($offer_data['type'] == 'coupon') echo 'selected'; ?>>Coupon</option>
+					<option value="cashback" <?php if($offer_data['type'] == 'cashback') echo 'selected'; ?>>Cashback</option>
 					<option value="discount" <?php if($offer_data['type'] == 'discount') echo 'selected'; ?>>Discount</option>
 				</select>
 			</div>
@@ -51,8 +50,25 @@ $date = "DD/MM/YYYY hh:mm:ss A";
 		</div>
 		<div class="col-md-6 col-lg-6 col-sm-12">
 			<div class="form-group">
-				<label for="offer_price">Offer Price</label>
+				<div class="radio-inline">
+					<label class="radio">
+						<input type="radio" name="edit_offer_value_type" value="price" <?php if(empty($offer_data['discount'])) echo 'checked'; ?> />
+						<span></span>
+						Max Offer Price
+					</label>
+					<label class="radio">
+						<input type="radio" name="edit_offer_value_type" value="discount" <?php if(!empty($offer_data['discount'])) echo 'checked'; ?>/>
+						<span></span>
+						Discount
+					</label>
+				</div>
 				<input class="form-control" type="number" name="offer_price" placeholder="Offer Price" min="0" value="<?php echo $offer_data['offer_price']; ?>">
+			</div>
+		</div>
+		<div class="col-md-6 col-lg-6 col-sm-12" id="edit_show_discount_div">
+			<div class="form-group">
+				<label for="">Discount %</label>
+				<input class="form-control" type="number" id="discount_value" name="discount_value" placeholder="Discount" value="<?php echo $offer_data['discount']; ?>" min="0" max="70">
 			</div>
 		</div>
 		<div class="col-md-3 col-lg-3 col-sm-12 my-auto">
@@ -63,7 +79,7 @@ $date = "DD/MM/YYYY hh:mm:ss A";
 		<div class="col-12 mt-3">
 			<div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-				<button type="button" onclick="delete_offer(<?php echo $offer_data['offer_id']; ?>)" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
+				<button type="button" onclick="delete_offer('<?php echo $offer_data['offer_id']; ?>')" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
                 <button type="button" class="btn btn-success" id="edit_offer_btn"><i class="fas fa-check"></i> Update</button>                
             </div>
 		</div>
@@ -72,6 +88,12 @@ $date = "DD/MM/YYYY hh:mm:ss A";
 
 <script>
 $(document).ready(function (){
+	<?php if(!empty($offer_data['discount'])){ ?>
+		$('#edit_show_discount_div').show();
+<?php }else{ ?>
+		$('#edit_show_discount_div').hide();
+<?php } ?>
+	
 	const categories = <?php echo json_encode($categories); ?>;
 	$('[data-toggle="tooltip"]').tooltip()
 
@@ -82,7 +104,7 @@ $(document).ready(function (){
 			data:{"action" : "udpate_offer"},
 			success:function (resp){
 				if(resp.status === 'success'){
-					toastr["success"]("", "Fffer updated successfully");
+					toastr["success"]("", "Offer updated successfully");
 					offers_table.ajax.reload();
 				}else{
 					toastr["error"]("", "Offer updation failed");
@@ -96,7 +118,14 @@ $(document).ready(function (){
 			}
 		});
 	});
-
+	
+	$(document).on("change", "[name=edit_offer_value_type]", function () {
+		$('#edit_show_discount_div').hide();
+		$('#edit_show_discount_div input').val('');
+		if($(this).val() === "discount")
+			$('#edit_show_discount_div').show();
+	});
+			
 	//Date picker intialization
 	$('#edit_offer_start').datetimepicker({
 		format:"<?php echo $date; ?>",

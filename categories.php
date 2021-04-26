@@ -175,7 +175,7 @@ include('header.php');
             ScrollX:		true,
             paging:         true,
             scrollCollapse: true,
-            searchHighlight: true,				
+            searchHighlight: true,            		
             "ajax": {
                 "url": "ajax_calls.php",
                 "type": "POST",
@@ -184,10 +184,16 @@ include('header.php');
             "columnDefs": [
                 {"className": "dt-center", "targets": [0,2]},
                 {
+                    render: function(data, type, row, meta) {
+                        return type == 'display' ? meta.row + 1 : data;
+                    },orderable: false,
+                    "targets": 0
+                },
+                {
                     "render": function ( data, type, row ) {                   
-                        return `<span><a href="#" onclick="edit_category(${row['category_id']})" class="btn btn-icon btn-circle btn-light-skype mr-2">
+                        return `<span><a href="#" onclick="edit_category('${row['category_id']}')" class="btn btn-icon btn-circle btn-light-skype mr-2">
                                     <i class="fas fa-pen"></i>
-                                </a>&nbsp<a href="#" onclick="delete_category(${row['category_id']})" class="btn btn-icon btn-circle btn-light-youtube">
+                                </a>&nbsp<a href="#" onclick="delete_category('${row['category_id']}')" class="btn btn-icon btn-circle btn-light-youtube">
                                     <i class="fas fa-trash"></i>
                                 </a></span>`;
                     },"targets": 5
@@ -200,7 +206,7 @@ include('header.php');
 		    ],
             "columns": category_cols,
             "order": [
-                [0, "asc"]
+                // [0, "asc"]
             ]
         });
         

@@ -163,7 +163,7 @@ $all_items = get_items_data('');
 		<div class="col-12 mt-3">
 			<div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-				<button type="button" onclick="delete_recipe(<?php echo $recipe_data['recipe_id']; ?>)" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
+				<button type="button" onclick="delete_recipe('<?php echo $recipe_data['recipe_id']; ?>')" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
                 <button type="button" class="btn btn-success" id="edit_recipe_btn"><i class="fas fa-check"></i> Update</button>                
             </div>
 		</div>

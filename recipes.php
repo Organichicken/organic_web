@@ -304,10 +304,16 @@ $all_items = get_items_data('');
             "columnDefs": [
                 {"className": "dt-center", "targets": [0,3]},
                 {
+                    render: function(data, type, row, meta) {
+                        return type == 'display' ? meta.row + 1 : data;
+                    },orderable: false,
+                    "targets": 0
+                },
+                {
                     "render": function ( data, type, row ) {                   
-                        return `<span><a href="#" onclick="edit_recipe(${row['recipe_id']})" class="btn btn-icon btn-circle btn-light-skype mr-2">
+                        return `<span><a href="#" onclick="edit_recipe('${row['recipe_id']}')" class="btn btn-icon btn-circle btn-light-skype mr-2">
                                     <i class="fas fa-pen"></i>
-                                </a>&nbsp<a href="#" onclick="delete_recipe(${row['recipe_id']})" class="btn btn-icon btn-circle btn-light-youtube">
+                                </a>&nbsp<a href="#" onclick="delete_recipe('${row['recipe_id']}')" class="btn btn-icon btn-circle btn-light-youtube">
                                     <i class="fas fa-trash"></i>
                                 </a></span>`;
                     },"targets": 5

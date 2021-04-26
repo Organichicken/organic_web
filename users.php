@@ -143,8 +143,16 @@ include('header.php');
 					"data":{'action':'load_users'}
 				},
 				"columns": customer_cols,
+				 "columnDefs": [
+					{
+						render: function(data, type, row, meta) {
+							return type == 'display' ? meta.row + 1 : data;
+						},orderable: false,
+						"targets": 0
+					},
+				],
                 "order": [
-                    [0, "asc"]
+                    // [0, "asc"]
                 ]
             });
 			

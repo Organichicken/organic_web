@@ -16,21 +16,23 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $resp['status'] = 200;
     db_begin_transaction();   
     
-    $order_key = "#ORGCHKN".generateRandomString(6);
-    $res = db_query("INSERT INTO `orders`(`user_id`, `status`, `order_key`, `order_at`) VALUES ('".db_escape($_POST['user_id'])."','0','".db_escape($order_key)."','".date('Y-m-d H:i:s')."')");
+    $order_key = generate_unique_id('order',5);    
+
+    foreach ($_POST['items'] as $item) {
+        $item_data = get_items_data_for_api($item['item_id']);
+        $ord_qry = db_query("INSERT INTO `order_details`(`order_id`, `quantity`, `item_price`, `price`, `item_id`, `discount_price`) VALUES ('".db_escape($order_key)."','".db_escape($item['quantity'])."','".db_escape($item_data['price_per_unit'])."','".(db_escape($item_data['discount_price']) * db_escape($item['quantity']))."','".db_escape($item['item_id'])."','".db_escape($item_data['discount_price'])."')");
+    }
+    $offer = get_offers_data($_POST['offer_id']);
+    $res = db_query("INSERT INTO `orders`(`order_key`, `user_id`, `address_id`, `offer_id`, `order_price`, `delivery_charge`, `discount_price`, `final_order_price`, `status`, `order_at`, `last_updated_time`) VALUES ('".db_escape($_POST['user_id'])."','".db_escape($_POST['address_id'])."','".db_escape($_POST['offer_id'])."','0','".db_escape($order_key)."','".date('Y-m-d H:i:s')."')");
+
+    $trans_qry = db_query("INSERT INTO `payments`(`user_id`, `order_id`, `amount`, `transaction_id`, `mode`, `status`, `timestamp` ) VALUES ('".makesafe($_POST['user_id'])."','".makesafe($order_key)."','".makesafe($_POST['amount'])."','".makesafe($_POST['transaction_id'])."','".makesafe($_POST['mode'])."','".makesafe($_POST['status'])."','".date('Y-m-d H:i:s')."')");
+
     if($res){
-        $order_id = db_insert_id();
-        if(db_query("INSERT INTO `order_details`(`order_id`, `quantity`, `item_price`, `price`, `item_id`, `discount_price`) VALUES ('".db_escape($order_id)."','".db_escape($_POST['quantity'])."','".db_escape($_POST['item_price'])."','".db_escape($_POST['price'])."','".db_escape($_POST['item_id'])."','".db_escape($_POST['discount_price'])."')"))
-        {
-            db_commit_transaction();
-            $resp['message'] = "successfully card saved";
-            $resp['body'] = array();
-        }else{
-            db_rollback_transaction();
-            $resp['status'] = 500;
-            $resp['message'] = "something went wrong";
-        }
+        db_commit_transaction();
+        $resp['message'] = "successfully order placed";
+        $resp['body'] = array();
     }else{
+        db_rollback_transaction();
         $resp['status'] = 500;
         $resp['message'] = "something went wrong";
     }

@@ -25,7 +25,8 @@ $date = "DD/MM/YYYY hh:mm:ss A";
                                         <th>Code</th>
                                         <th>Description</th>
                                         <th>Min Order Price</th>
-										<th>Offer Price</th>
+										<th>Max Offer Price</th>
+                                        <th>Discount (%)</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -53,7 +54,7 @@ $date = "DD/MM/YYYY hh:mm:ss A";
                                     <label for="offername">Offer Type</label>
                                     <select class="form-control" id="offer_type" name="offer_type">
                                         <option value="">Select offer type</option>
-                                        <option value="coupon">Coupon</option>
+                                        <option value="cashback">Cashback</option>
                                         <option value="discount">Discount</option>
                                     </select>
                                 </div>
@@ -98,8 +99,25 @@ $date = "DD/MM/YYYY hh:mm:ss A";
                             </div>
                             <div class="col-md-6 col-lg-6 col-sm-12">
                                 <div class="form-group">
-                                    <label for="offer_price">Offer Price</label>
+									<div class="radio-inline">
+										<label class="radio">
+											<input type="radio" name="offer_value_type" value="price" checked />
+											<span></span>
+											Max Offer Price
+										</label>
+										<label class="radio">
+											<input type="radio" name="offer_value_type" value="discount"/>
+											<span></span>
+											Discount
+										</label>
+									</div>
                                     <input class="form-control" type="number" id="offer_price" name="offer_price" placeholder="Offer Price" value="0" min="0">
+                                </div>
+                            </div>
+							<div class="col-md-6 col-lg-6 col-sm-12" id="show_discount_div">
+                                <div class="form-group">
+                                    <label for="">Discount %</label>
+                                    <input class="form-control" type="number" id="discount_value" name="discount_value" placeholder="Discount" value="0" min="0" max="70">
                                 </div>
                             </div>
                             <div class="col-md-3 col-lg-3 col-sm-12 my-auto">
@@ -181,8 +199,8 @@ $date = "DD/MM/YYYY hh:mm:ss A";
             });
         }
         $(document).ready(function (){
-
-			var offer_cols = [{"data":"offer_id"},{"data":"type"},{"data":"offer_start"},{"data":"offer_end"},{"data":"code"},{"data":"description"},{"data":"min_order_price"},{"data":"offer_price"},{"data":"status"}];
+			$('#show_discount_div').hide();
+			var offer_cols = [{"data":"offer_id"},{"data":"type"},{"data":"offer_start"},{"data":"offer_end"},{"data":"code"},{"data":"description"},{"data":"min_order_price"},{"data":"offer_price"},{"data":"discount"},{"data":"status"}];
 			
             offers_table = $('#offers_table').DataTable({
                 ScrollX:		true,
@@ -197,9 +215,15 @@ $date = "DD/MM/YYYY hh:mm:ss A";
                 "columnDefs": [
                     {"className": "dt-center", "targets": [0]},
                     {
+                        render: function(data, type, row, meta) {
+                            return type == 'display' ? meta.row + 1 : data;
+                        },orderable: false,
+                        "targets": 0
+                    },
+                    {
                         "render": function ( data, type, row ) {                   
                             return +row['status'] === 1 ? '<i class="fas fa-check-square text-primary"></i>' : '<i class="fas fa-square"></i>';
-                        },"targets": 8
+                        },"targets": 9
                     },
                 ],
 				"columns": offer_cols,
@@ -225,6 +249,13 @@ $date = "DD/MM/YYYY hh:mm:ss A";
 				index = $(this).attr('id');
 				if(!index) return false;
 				edit_offer_modal(index);		
+            });
+			
+			$(document).on("change", "[name=offer_value_type]", function () {
+				$('#show_discount_div').hide();
+				$('#show_discount_div input').val('');
+				if($(this).val() === "discount")
+					$('#show_discount_div').show();
             });
             
             $('#add_new_offer_btn').click(() => {
