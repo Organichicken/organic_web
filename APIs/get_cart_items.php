@@ -19,6 +19,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $actual_cart_total = $discount_cart_total = $final_cart_total = 0;
     $delivery_charges = get_meta_value("delivery_charges");
     $user_cart_data = get_user_cart_data(db_escape($_POST['user_id']));
+    $user_wallet = 0;
     // echo json_encode($user_cart_data);
     foreach ($user_cart_data as $row) {
         $item = $row;
@@ -88,6 +89,8 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $cart_data['final_cart_total'] = (string)($final_cart_total + $delivery_charges);
     }else
 		$cart_data['items'] = array();
+
+    $cart_data['wallet_amount'] = (string)$user_wallet;
     $cart_data['offer_details'] = $cart_offer;
     $resp['body'] = $cart_data;
 }else{
