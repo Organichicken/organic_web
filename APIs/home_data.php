@@ -9,21 +9,37 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $resp = $items_data = $trending_items = array();
 
-$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity FROM `items` left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($_POST['user_id'])."' WHERE `in_stock` = '1' LIMIT 6");
+if(!empty($user_phone) && !empty($user_hash_key) && !sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+    $resp['status'] = 404;
+    $resp['message'] = "invalid user";
+    $resp['body'] = array();
+    echo json_encode($resp);
+    exit;
+}
+
+$user_id = !empty($_POST['user_id']) ? makesafe($_POST['user_id']) : '';
+
+if(!empty($user_id))
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' LIMIT 6");
+else
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' LIMIT 6");
+
 while($row = db_fetch_assoc($res))
 {
-	$row['price_per_unit'] = (string)round($row['price_per_unit']);
     $items_data[] = $row;
 }
-$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity FROM `items` left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($_POST['user_id'])."' WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+if(!empty($user_id))
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+else
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+
 while($row = db_fetch_assoc($res))
 {
-	$row['price_per_unit'] = (string)round($row['price_per_unit']);
     $trending_items[] = $row;
 }
 
-$final_data['trending_items'] = $trending_items;
-$final_data['recommended_items'] = $items_data;
+$final_data['trending_items'] = parse_items_data($trending_items);
+$final_data['recommended_items'] = parse_items_data($items_data);
 
 $final_data['categories'] = get_categories_data();
 //Get video links data

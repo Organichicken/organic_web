@@ -669,8 +669,9 @@ function get_items_data_for_api($id = null,$user_id = null){
 	if(!empty($id)){
 		$query = " AND items.item_id = '".$id."'";
 	}
-	if(!empty($user_id))
+	if(!empty($user_id)){
 		$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' ".$query);
+	}
 	else
 		$res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' ".$query);
 	
@@ -684,8 +685,7 @@ function get_items_data_for_api($id = null,$user_id = null){
 //Retrive user cart details from DB
 function get_user_cart_data($user_id){
 	$cart_data = array();
-	
-	$res = db_query("SELECT c.`cart_id`,c.`item_id`, c.`quantity`,it.price_per_unit,it.discount_price,it.net_weight,it.item_name,it.item_image FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."' ORDER BY it.item_name");
+	$res = db_query("SELECT c.`cart_id`,c.`item_id`,c.`quantity`,it.price_per_unit,it.discount_price,it.net_weight,it.item_name,it.item_image FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE c.user_id = '".$user_id."' ORDER BY it.item_name");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -714,5 +714,33 @@ function generate_unique_id($label,$length = 5){
 	if($label && $items_array[$label])
 		return $items_array[$label]."_".generateRandomString($length);
 	return false;
+}
+
+//To convert some items values to string (27-04-21)
+function parse_items_data($items_data){
+    $items = array();
+    foreach ($items_data as $row) {
+        $item = array();
+        $item['item_id'] = $row['item_id'];
+        $item['item_name'] = $row['item_name'];
+        $item['item_image'] = $row['item_image'];
+        $item['item_description'] = $row['item_description'];
+        $item['category_id'] = $row['category_id'];
+        $item['no_of_pieces'] = $row['no_of_pieces'];
+        $item['available_quantity'] = (string)round($row['available_quantity']);
+        $item['price_per_unit'] = (string)round($row['price_per_unit']);
+        $item['gross_weight'] = (string)round($row['gross_weight']);
+        $item['net_weight'] = (string)round($row['net_weight']);
+        $item['weight_type'] = (string)round($row['weight_type']);
+        $item['discount_price'] = (string)round($row['discount_price']);   
+        $item['serves'] = $row['serves'];
+        $item['in_stock'] = $row['in_stock'];
+        $item['recipe_id'] = $row['recipe_id'];
+        $item['recipe_name'] = $row['recipe_name'];
+        $item['cart_item_quantity'] = $row['cart_item_quantity'];
+        
+        $items[] = $item;
+    }
+    return $items;
 }
 ?>

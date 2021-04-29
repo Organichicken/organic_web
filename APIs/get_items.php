@@ -30,31 +30,5 @@ if(isset($_POST['item_id']) && !empty($_POST['item_id'])){
     $resp['body'] = parse_items_data(get_items_data_for_api('',$user_id));
 }
 
-function parse_items_data($items_data){
-    $items = array();
-    foreach ($items_data as $row) {
-        $item = array();
-        $item['item_id'] = $row['item_id'];
-        $item['item_name'] = $row['item_name'];
-        $item['item_image'] = $row['item_image'];
-        $item['item_description'] = $row['item_description'];
-        $item['category_id'] = $row['category_id'];
-        $item['no_of_pieces'] = $row['no_of_pieces'];
-        $item['available_quantity'] = (string)round($row['available_quantity']);
-        $item['price_per_unit'] = (string)round($row['price_per_unit']);
-        $item['gross_weight'] = (string)round($row['gross_weight']);
-        $item['net_weight'] = (string)round($row['net_weight']);
-        $item['weight_type'] = (string)round($row['weight_type']);
-        $item['discount_price'] = (string)round($row['discount_price']);   
-        $item['serves'] = $row['serves'];
-        $item['in_stock'] = $row['in_stock'];
-        $item['recipe_id'] = $row['recipe_id'];
-        $item['recipe_name'] = $row['recipe_name'];
-        $item['cart_item_quantity'] = $row['cart_item_quantity'];
-        
-        $items[] = $item;
-    }
-    return $items;
-}
 echo json_encode($resp);
 ?>
