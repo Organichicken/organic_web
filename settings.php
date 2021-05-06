@@ -111,20 +111,37 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title collapsed" data-toggle="collapse" data-target="#pincodes">
-                            <i class="fas fa-map"></i> Pincodes
+                        <div class="card-title collapsed" data-toggle="collapse" data-target="#settings">
+                            <i class="fas fa-tasks"></i> Settings
                         </div>
                     </div>
-                    <div id="pincodes" class="collapse" data-parent="#accordion_settings">
+                    <div id="settings" class="collapse" data-parent="#accordion_settings">
                         <div class="card-body">
-                             <div class="row">                     
-                                <!-- <div class="col-12 mb-3">
-                                    <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold" id="add_tale_image"><i class="fas fa-plus"></i> Add tale</button>
-                                </div> -->
-                                <div class="col-12">
-                                    <label for="">Available Pincodes</label>
+                            <form id="save_settings_form">
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Minimum Cart Value</label>
+                                            <input class="form-control" type="number" id="min_cart_val" name="min_cart_val" placeholder="Enter minimun cart value" value="<?php echo get_meta_value('min_cart_val'); ?>" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Delivery Charges</label>
+                                            <input class="form-control" type="number" id="delivery_charges" name="delivery_charges" placeholder="Enter delivery charge" value="<?php echo get_meta_value('delivery_charges'); ?>" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Pincodes (Add multiple pincodes with comma separated)</label>
+                                            <textarea class="form-control" name="pincodes" id="pincodes" cols="0" rows="2"><?php echo get_meta_value('pincodes'); ?></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold" id="save_settings_btn"><i class="fas fa-rocket"></i> Save</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -308,6 +325,17 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
             $('#video_action_id').val('');
             $('#add_edit_video_modal .modal-header').find('.modal-title').html("Add video link");
             $('#add_edit_video_modal').modal('show');
+        });
+        $('#save_settings_btn').click(() => {
+            $('#save_settings_form').ajaxSubmit({
+                url: "ajax_calls.php", dataType: "json", type: "POST",
+                data: { "action": "save_settings" },
+                success: function (resp) {
+                    toastr["success"]("", "Settings updated successfully");
+                }, error: function (xhr, status, error) {
+                    toastr["error"](" ", "Oops! Something went wrong");
+                }
+            })
         });
         $('#add_image_link').click(() => {
             KTApp.unblock("#add_new_slider_image_form");

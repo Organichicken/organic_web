@@ -13,13 +13,13 @@ $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+    $user_id = makesafe($_POST['user_id']);
     $resp['status'] = 200;
     $resp['message'] = "cart details";
     $cart_data = array();
     $actual_cart_total = $discount_cart_total = $final_cart_total = 0;
     $delivery_charges = get_meta_value("delivery_charges");
-    $user_cart_data = get_user_cart_data(db_escape($_POST['user_id']));
-    $user_wallet = 0;
+    $user_cart_data = get_user_cart_data(db_escape($user_id));
     // echo json_encode($user_cart_data);
     foreach ($user_cart_data as $row) {
         $item = $row;
@@ -90,7 +90,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     }else
 		$cart_data['items'] = array();
 
-    $cart_data['wallet_amount'] = (string)$user_wallet;
+    $cart_data['wallet_amount'] = (string)sqlValue("SELECT SUM(amount) FROM `user_wallet` WHERE `user_id` = '".$user_id."' ");
     $cart_data['offer_details'] = $cart_offer;
     $resp['body'] = $cart_data;
 }else{

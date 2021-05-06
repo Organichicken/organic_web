@@ -20,18 +20,18 @@ if(!empty($user_phone) && !empty($user_hash_key) && !sqlValue("SELECT COUNT(*) F
 $user_id = !empty($_POST['user_id']) ? makesafe($_POST['user_id']) : '';
 
 if(!empty($user_id))
-    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' LIMIT 6");
 else
-    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' LIMIT 6");
 
 while($row = db_fetch_assoc($res))
 {
     $items_data[] = $row;
 }
 if(!empty($user_id))
-    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
 else
-    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,rec.recipe_id,rec.recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
 
 while($row = db_fetch_assoc($res))
 {
@@ -56,6 +56,11 @@ $final_data['slider_images'] = $final_sliders_data;
 $tales_data = get_meta_value('tales');
 $final_tales_data = $tales_data ? json_decode($tales_data,true) : array();
 $final_data['tales'] = $final_tales_data;
+
+$final_data['user_info'] = (object)array();
+if(!empty($user_id))
+    $final_data['user_info'] = sqlr("SELECT `user_id`, `first_name`, `email`, `phone`, `profile_pic`, `active`, `is_member`, `membership_ends` FROM `users` WHERE user_id = '".$user_id."' LIMIT 1");
+    ;
 
 $resp['status'] = 200;
 $resp['message'] = "success";

@@ -9,7 +9,8 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $resp = array();
 $resp['status'] = 200;
-$pincodes = array("520001","520003","521226","520012","520008");
+$pincodes = explode(',',get_meta_value('pincodes'));
+
 if(in_array($_POST['pincode'],$pincodes)){
     $resp['message'] = "delivery available";
     $resp['body'] = array("is_deliverable" => "1");

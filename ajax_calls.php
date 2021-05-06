@@ -429,4 +429,17 @@ else if(isset($_POST['action']) && $_POST['action'] == 'add_new_tale_image'){
 	else 
 		echo json_encode(array("status"=>"fail"));
 }
+else if(isset($_POST['action']) && $_POST['action'] == 'save_settings'){
+
+	if(!empty($_POST['delivery_charges'])){
+		update_meta_value("delivery_charges",makesafe($_POST['delivery_charges']));
+	}
+	if(!empty($_POST['min_cart_val'])){
+		update_meta_value("min_cart_val",makesafe($_POST['min_cart_val']));
+	}
+	if(!empty($_POST['min_cart_val'])){
+		update_meta_value("pincodes",makesafe($_POST['pincodes']));
+	}
+	echo json_encode(array("status"=>"success"));
+}
 ?>

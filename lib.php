@@ -43,12 +43,11 @@ function sql($statment, &$o){
 }
 		
 function sqlr($statment){					
-
 	if(!$result = db_query($statment))		
 		exit;
 	
 	$r = db_fetch_assoc($result);	
-	return $r;
+	return $r ? $r : (object)array();
 }
 function sqln($statment){				
 
@@ -478,12 +477,12 @@ function get_offers_data($id = null,$filter = null){
 	$query = "";
 	
 	if(!empty($id)){
-		$query = " WHERE offer_id = '".$id."'";
+		$query = " AND offer_id = '".$id."'";
 	}
 	if($filter){
-		$query = " WHERE status = '1'";
+		$query = " AND status = '1'";
 	}
-	$res = db_query("SELECT * FROM `offers` ".$query." ORDER BY offer_start DESC ");
+	$res = db_query("SELECT * FROM `offers` WHERE is_deleted = '0' ".$query." ORDER BY offer_start DESC ");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -649,7 +648,7 @@ function get_items_by_category($cat_id,$user_id = null)
 	$items_data = array();
 
 	if(!empty($user_id))
-		$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE items.category_id = '".$cat_id."'");
+		$res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE items.category_id = '".$cat_id."'");
 	else
 		$res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE items.category_id = '".$cat_id."'");
 	
