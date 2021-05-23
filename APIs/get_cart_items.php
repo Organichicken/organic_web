@@ -20,6 +20,8 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $actual_cart_total = $discount_cart_total = $final_cart_total = 0;
     $delivery_charges = get_meta_value("delivery_charges");
     $user_cart_data = get_user_cart_data(db_escape($user_id));
+    $user_wallet = sqlValue("SELECT SUM(amount) FROM `user_wallet` WHERE `user_id` = '".$user_id."'");
+    $user_wallet = $user_wallet ? $user_wallet : 0;
     // echo json_encode($user_cart_data);
     foreach ($user_cart_data as $row) {
         $item = $row;
@@ -28,30 +30,31 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $item['price_per_unit'] = (string)round($row['price_per_unit']);
         $item['net_weight'] = (string)round($row['net_weight']);
         $item['discount_price'] = (string)round($row['discount_price']);   
-        $item['item_final_price'] = (string)($item['quantity'] * $item['discount_price']);   
+        $item['item_final_price'] = (string)($row['quantity'] * $row['discount_price']);   
         
         $actual_cart_total += $item['item_final_price'];
         $discount_cart_total += ($item['price_per_unit'] - $item['discount_price']) * $item['quantity'];
         $final_cart_total += $item['item_final_price'];
         $cart_data['items'][] = $item;
     }
-    if($user_cart_data){
-        $cart_offer = array();
-        $cart_offer['status'] = $cart_offer['offer_price'] = '0';
+    $final_cart_total += $delivery_charges;
+    if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')) $final_order_total -= $user_wallet;
 
+    $cart_offer = array();
+    $cart_offer['msg'] = '';
+    $cart_offer['status'] = $cart_offer['offer_price'] = $cart_offer['cashback'] = '0';
+    if($user_cart_data){
         if(!empty($_POST['offer_id'])){
             $offer = get_offers_data($_POST['offer_id'])[0];
             // echo json_encode($offer);
             if($offer['status'] == "1"){
                 if(strtotime($offer['offer_end']) >= strtotime(date('Y-m-d H:i:s'))){
                     if($final_cart_total >= $offer['min_order_price']){
-                        // echo "VJ";
                         $cart_offer['status'] = '1';
                         $cart_offer['offer_price'] = $offer['offer_price'];
                         if(empty($offer['discount'])){
                             $final_cart_total -= $offer['offer_price'];
                         }else{
-                            // echo "VJ";
                             $offer_price = round(($final_cart_total * $offer['discount'] / 100));
                             if($offer_price < $offer['offer_price']){
                                 $cart_offer['offer_price'] = $offer_price;
@@ -64,7 +67,6 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
                            $cart_offer['cashback'] = '0';
                            $cart_offer['offer_price'] = (string)round($cart_offer['offer_price']);
                         }else{
-                            // echo "VJa";
                             $cart_offer['cashback'] = (string)round($cart_offer['offer_price']);
                             $cart_offer['offer_price'] = '0';
                         }
@@ -87,10 +89,13 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $cart_data['discount_cart_total'] = (string)$discount_cart_total;
         $cart_data['delivery_charges'] = (string)$delivery_charges;
         $cart_data['final_cart_total'] = (string)($final_cart_total + $delivery_charges);
-    }else
+    }else{
+        $cart_data['actual_cart_total'] = $cart_data['discount_cart_total'] = $cart_data['delivery_charges'] = $cart_data['final_cart_total'] = '0';
 		$cart_data['items'] = array();
+    }
 
-    $cart_data['wallet_amount'] = (string)sqlValue("SELECT SUM(amount) FROM `user_wallet` WHERE `user_id` = '".$user_id."' ");
+    $cart_data['wallet_amount'] = (string)$user_wallet;
+    $cart_data['min_cart_value'] = (string)get_meta_value('min_cart_val');
     $cart_data['offer_details'] = $cart_offer;
     $resp['body'] = $cart_data;
 }else{

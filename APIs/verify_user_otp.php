@@ -24,7 +24,12 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `otp` = '".$user_otp.
 			$res = db_query("INSERT INTO `users`(`user_id`, `phone`, `password`, `active`, `is_member`, `created_at`) VALUES ('".$user_id."','".$user_phone."','".md5($user_phone)."','1','0','".date('Y-m-d H:i:s')."')");			
 			$is_new_user = "0";
 		}
-		
+		if(!empty($_POST['fcm_token'])){
+            if(sqlValue("SELECT COUNT(*) FROM `fcm_tokens` WHERE `user_id` = '".$user_id."'"))
+                $res = db_query("UPDATE `fcm_tokens` SET `token` = '".makesafe($_POST['fcm_token'])."',`device` = '".makesafe($_POST['device'])."',`updated_at` = '".date('Y-m-d H:i:s')."' WHERE `user_id` = '".$user_id."'");
+            else
+                $res = db_query("INSERT INTO `fcm_tokens` ( `user_id`, `token`, `device`, `updated_at`) VALUES ('".makesafe($user_id)."','".makesafe($_POST['fcm_token'])."','".makesafe($_POST['device'])."','".date('Y-m-d H:i:s')."')");
+        }
         $resp['body'] = array('nkey' => md5($user_phone.date('Y-m-d H:i:s')), "user_id" => $user_id, "is_new_user" => $is_new_user);
     }else{
         $resp['status'] = 500;

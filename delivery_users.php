@@ -1,5 +1,5 @@
 <?php
-$current_page = "employees";
+$current_page = "delivery_users";
 include('header.php');
 ?>
     <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
@@ -7,7 +7,7 @@ include('header.php');
         <div class="row">
             <div class="col-12">
                 <span class="text-warning"> <i class="fas fa-info-circle text-warning"></i> Double click on any record to edit</span>
-                <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold" data-toggle="modal" data-target="#add_employee"><i class="fas fa-plus"></i> Add employee</button>
+                <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold" data-toggle="modal" data-target="#add_delivery_user"><i class="fas fa-plus"></i> Add Delivery User</button>
             </div>
         </div><br>
         <div class="row">
@@ -16,7 +16,7 @@ include('header.php');
                     <div class="card-body">
                         
                         <div class="table-responsive">
-                            <table id="employees_table" class="table less_border table-striped table-bordered no-wrap">
+                            <table id="delivery_users_table" class="table less_border table-striped table-bordered no-wrap">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -24,7 +24,6 @@ include('header.php');
                                         <th>Last Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
-                                        <!-- <th>Is member</th> -->
 										<th>Status</th>
                                     </tr>
                                 </thead>
@@ -36,16 +35,16 @@ include('header.php');
         </div>
     </div>
     
-    <!-- Add employee modal -->
-    <div id="add_employee" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Add delivery_user modal -->
+    <div id="add_delivery_user" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 55%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Add employee</h4>
+                    <h4 class="modal-title">Add Delivery User</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
-                    <form class="pl-3 pr-3" id="add_new_employee_form">
+                    <form class="pl-3 pr-3" id="add_new_delivery_user_form">
                         <div class="row">
                             <div class="col-md-6 collg-6 col-sm-12">
                                 <div class="form-group">
@@ -67,7 +66,7 @@ include('header.php');
                             </div>
                             <div class="col-md-6 collg-6 col-sm-12">
                                 <div class="form-group">
-                                    <label for="mobile">Mobile Number</label>
+                                    <label for="mobile">Mobile Number <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text"  id="mobile_num" name="mobile_num" placeholder="Enter mobile number">
                                 </div>
                             </div>
@@ -83,7 +82,7 @@ include('header.php');
                             <div class="col-12 mt-3">
                                 <div class="form-group text-right">
                                     <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-                                    <button type="button" class="btn btn-success" id="add_new_employee_btn"><i class="fas fa-check"></i> Save</button>
+                                    <button type="button" class="btn btn-success" id="add_new_delivery_user_btn"><i class="fas fa-check"></i> Save</button>
                                 </div>
                             </div>
                         </div>
@@ -93,15 +92,15 @@ include('header.php');
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-	<!-- Edit employee modal -->
-    <div id="edit_employee_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+	<!-- Edit delivery_user modal -->
+    <div id="edit_delivery_user_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" style="max-width: 55%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Edit employee</h4>
+                    <h4 class="modal-title">Edit Delivery User</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                <div class="modal-body" id="load_edit_employee_data">
+                <div class="modal-body" id="load_edit_delivery_user_data">
                     
                 </div>
             </div><!-- /.modal-content -->
@@ -110,41 +109,41 @@ include('header.php');
     <?php include('footer.php'); ?>
     <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
     <script>
-        var employees_table;   
-		var edit_employee_modal = function (id){
-			$('#edit_employee_modal').modal('show');
+        var delivery_users_table;   
+		var edit_delivery_user_modal = function (id){
+			$('#edit_delivery_user_modal').modal('show');
 			$.ajax({
-				url:"edit_employee_modal.php",dataType:"html",type:"POST",
-				data:{"id":id,"action":"edit_employee"},
+				url:"edit_delivery_user_modal.php",dataType:"html",type:"POST",
+				data:{"id":id,"action":"edit_delivery_user"},
 				success:function (resp){
-					$("#load_edit_employee_data").html(resp);
+					$("#load_edit_delivery_user_data").html(resp);
 				},error: function(xhr, status, error) {
-					$('#edit_employee_modal').modal('hide');
+					$('#edit_delivery_user_modal').modal('hide');
 					toastr["error"](" ", "Oops! Something went wrong")
 				}
 			})
         }
         
-        var delete_employee = function (id){        
+        var delete_delivery_user = function (id){        
             Swal.fire({
-                title: "Are you sure want to delete this employee?",icon: "warning",
+                title: "Are you sure want to delete this delivery_user?",icon: "warning",
                 showCancelButton: true,confirmButtonText: "Yes"
             }).then(function(result) {
                 if (result.value) {
                     $.ajax({
                         url:"ajax_calls.php",dataType:"json",type:"POST",
-                        data:{"id":id,"action":"delete_employee"},
+                        data:{"id":id,"action":"delete_delivery_user"},
                         success:function (resp){
                             if(resp.status === 'success'){
-                                toastr["success"]("", "Employee successfully deleted");
-                                employees_table.ajax.reload();
+                                toastr["success"]("", "Delivery user successfully deleted");
+                                delivery_users_table.ajax.reload();
                             }else{
-                                toastr["error"](" ", "Failed to delete employee")
+                                toastr["error"](" ", "Failed to delete delivery_user")
                             }
-                            $("#edit_employee_modal").modal("hide");                    
+                            $("#edit_delivery_user_modal").modal("hide");                    
                         },error: function(xhr, status, error) {
                             toastr["error"](" ", "Oops! Something went wrong");
-                            $("#edit_employee_modal").modal("hide");
+                            $("#edit_delivery_user_modal").modal("hide");
                         }
                     })
                 }else{
@@ -153,8 +152,8 @@ include('header.php');
             });
         }
         $(document).ready(function (){
-            //Add new employee form submit hanlder
-            var emp_form_validation = FormValidation.formValidation(document.getElementById('add_new_employee_form'),
+            //Add new delivery_user form submit hanlder
+            var emp_form_validation = FormValidation.formValidation(document.getElementById('add_new_delivery_user_form'),
 			{
 				fields: {
 					first_name: {
@@ -193,19 +192,19 @@ include('header.php');
 					bootstrap: new FormValidation.plugins.Bootstrap()
 				}
             });
-            $('#add_new_employee_btn').on('click', function (e) {
+            $('#add_new_delivery_user_btn').on('click', function (e) {
                 e.preventDefault();
 
                 emp_form_validation.validate().then(function(status) {
                     if (status == 'Valid') {
-                        $('#add_new_employee_form').ajaxSubmit({
+                        $('#add_new_delivery_user_form').ajaxSubmit({
                             url:"ajax_calls.php",type:"POST",dataType:"JSON",
-                            data:{action:'save_new_employee'},
+                            data:{action:'save_new_delivery_user'},
                             success:function(resp){
                                 if(resp.status == "success"){								
                                     setTimeout(function (){
-                                        toastr["success"](" ", "New employee created successfully");
-                                        employees_table.ajax.reload();
+                                        toastr["success"](" ", "New delivery user created successfully");
+                                        delivery_users_table.ajax.reload();
                                     },1000)
                                 }else if(resp.status == "fail"){
                                     toastr["error"](" ", resp.err)
@@ -213,9 +212,9 @@ include('header.php');
                                 }else{
                                     toastr["error"](" ", resp.err)
                                 }
-                                $('#add_employee').modal('hide');
+                                $('#add_delivery_user').modal('hide');
                             },error: function(xhr, status, error) {
-                                $('#add_employee').modal('hide');
+                                $('#add_delivery_user').modal('hide');
                                 toastr["error"](" ", "Oops! Something went wrong")
                             }
                         });
@@ -235,9 +234,9 @@ include('header.php');
                 });
             });
 
-			var employee_cols = [{"data":"employee_id"},{"data":"first_name"},{"data":"last_name"},{"data":"email"},{"data":"phone"},{"data":"status"}];
+			var delivery_user_cols = [{"data":"delivery_user_id"},{"data":"first_name"},{"data":"last_name"},{"data":"email"},{"data":"phone"},{"data":"status"}];
 			
-            employees_table = $('#employees_table').DataTable({
+            delivery_users_table = $('#delivery_users_table').DataTable({
                 ScrollX:		true,
                 paging:         true,
                 scrollCollapse: true,
@@ -245,18 +244,26 @@ include('header.php');
 				"ajax": {
 					"url": "ajax_calls.php",
 					"type": "POST",
-					"data":{'action':'load_employees'}
+					"data":{'action':'load_delivery_users'}
 				},
-				"columns": employee_cols,
+				"columns": delivery_user_cols,
+                "columnDefs": [
+                    {
+                        render: function(data, type, row, meta) {
+                            return type == 'display' ? meta.row + 1 : data;
+                        },orderable: false,
+                        "targets": 0
+                    }
+                ],
                 "order": [
                     [0, "asc"]
                 ]
             });
 			
-			$(document).on("dblclick", "#employees_table tbody tr", function () {
+			$(document).on("dblclick", "#delivery_users_table tbody tr", function () {
 				index = $(this).attr('id');
 				if(!index) return false;
-				edit_employee_modal(index);		
+				edit_delivery_user_modal(index);		
 			});
         })
     </script>

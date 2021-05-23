@@ -12,7 +12,7 @@ $user_hash_key = makesafe($_POST['hash_key']);
 
 $resp = array();
 
-if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){    
+if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){   
     $resp['status'] = 200;
     $resp['body'] = array();
     $target_dir = "../uploads/user_profile_pics/";
@@ -21,10 +21,12 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 	$encrypt_name = strtolower(str_replace(' ', '_',makesafe("user_".$_POST['user_id']))).'_'.time();
 	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
 	$img_path = '';
+    
 	//Code will move file to local folder
 	if(move_uploaded_file($_FILES['profile_pic']['tmp_name'],$target_file)){
 		$img_path = $encrypt_name.'.'.end($img_name);		
 	}
+
     if(db_query("UPDATE `users` SET `first_name` = '".makesafe($_POST['name'])."',`email` = '".makesafe($_POST['email'])."',`profile_pic` = '".makesafe($img_path)."', `last_updated_at` = '".date('Y-m-d H:i:s')."' WHERE `user_id` = '".makesafe($_POST['user_id'])."'")){
         $resp['message'] = "successfully saved";
     }else{

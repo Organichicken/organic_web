@@ -1,11 +1,11 @@
 <?php
 include('lib.php');
 $emp_id = makesafe($_POST['id']);
-$emp_data = get_employees_data($emp_id)[0];
+$emp_data = get_delivery_users_data($emp_id)[0];
 // echo json_encode($emp_data);
 ?>
-<form class="pl-3 pr-3" id="edit_employee_form">
-    <input type="hidden" name="employee_id" value="<?php echo $emp_data['employee_id']; ?>">
+<form class="pl-3 pr-3" id="edit_delivery_user_form">
+    <input type="hidden" name="delivery_user_id" value="<?php echo $emp_data['delivery_user_id']; ?>">
     <div class="row">
         <div class="col-md-6 collg-6 col-sm-12">
             <div class="form-group">
@@ -43,8 +43,8 @@ $emp_data = get_employees_data($emp_id)[0];
         <div class="col-12 mt-3">
             <div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-				<button type="button" onclick="delete_employee(<?php echo $emp_data['employee_id']; ?>)" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
-                <button type="button" class="btn btn-success" id="edit_employee_btn"><i class="fas fa-check"></i> Update</button>                
+				<button type="button" onclick="delete_delivery_user(<?php echo $emp_data['delivery_user_id']; ?>)" class="btn btn-danger mr-3"><i class="fas fa-check"></i> Delete</button>
+                <button type="button" class="btn btn-success" id="edit_delivery_user_btn"><i class="fas fa-check"></i> Update</button>                
             </div>
         </div>
     </div>
@@ -54,7 +54,7 @@ $emp_data = get_employees_data($emp_id)[0];
 <script>
 $(document).ready(function (){
 
-    var emp_form_validation = FormValidation.formValidation(document.getElementById('edit_employee_form'),
+    var emp_form_validation = FormValidation.formValidation(document.getElementById('edit_delivery_user_form'),
     {
         fields: {
             first_name: {
@@ -93,25 +93,25 @@ $(document).ready(function (){
             bootstrap: new FormValidation.plugins.Bootstrap()
         }
     });
-	$('#edit_employee_btn').click(() => {
+	$('#edit_delivery_user_btn').click(() => {
         emp_form_validation.validate().then(function(status) {
             if (status == 'Valid') {
-                KTApp.block("#edit_employee_form", { overlayColor: "#000000", state: "danger", message: "Saving..."})
-                $('#edit_employee_form').ajaxSubmit({
+                KTApp.block("#edit_delivery_user_form", { overlayColor: "#000000", state: "danger", message: "Saving..."})
+                $('#edit_delivery_user_form').ajaxSubmit({
                     url:"ajax_calls.php",dataType:"json",type:"POST",
-                    data:{"action" : "edit_employee"},
+                    data:{"action" : "edit_delivery_user"},
                     success:function (resp){
                         if(resp.status === 'success'){
-                            toastr["success"]("", "Employee updated successfully");
-                            employees_table.ajax.reload();
+                            toastr["success"]("", "Delivery user updated successfully");
+                            delivery_users_table.ajax.reload();
                         }else{
-                            toastr["error"]("", "employee updation failed");
+                            toastr["error"]("", "Delivery user updation failed");
                         }
                         setTimeout(() => {
-                            $("#edit_employee_modal").modal("hide");
+                            $("#edit_delivery_user_modal").modal("hide");
                         }, 2000);
                     },error: function(xhr, status, error) {
-                        $('#edit_employee_modal').modal('hide');
+                        $('#edit_delivery_user_modal').modal('hide');
                         toastr["error"](" ", "Oops! Something went wrong")
                     }
                 });

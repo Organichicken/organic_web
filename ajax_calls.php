@@ -176,30 +176,30 @@ else if(isset($_POST['action']) && $_POST['action'] == 'edit_item')
 		echo json_encode(array("status"=>"fail"));
 	}
 }
-else if(isset($_POST['action']) && $_POST['action'] == 'load_employees')
+else if(isset($_POST['action']) && $_POST['action'] == 'load_delivery_users')
 {
 	$final_data = array();
-	$data = get_employees_data('');
+	$data = get_delivery_users_data('');
 	
 	foreach($data as $row){
 		$row['status'] = (int)$row['active'] === 1 ? "Active" : "Inactive";
-		$row['DT_RowId'] = $row['employee_id'];
+		$row['DT_RowId'] = $row['delivery_user_id'];
 		$final_data[] = $row;
 	}
 	echo json_encode(array("data" => $final_data));
 }
-else if(isset($_POST['action']) && $_POST['action'] == 'save_new_employee'){
-	if(add_new_employee($_POST))
+else if(isset($_POST['action']) && $_POST['action'] == 'save_new_delivery_user'){
+	if(add_new_delivery_user($_POST))
 		echo json_encode(array("status"=>"success"));
 	else 
 		echo json_encode(array("status"=>"fail"));
 }
-else if(isset($_POST['action']) && $_POST['action'] == 'delete_employee'){
-	if(!empty($_POST['id']) && delete_employee($_POST['id'])) echo json_encode(array("status"=>"success"));
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_delivery_user'){
+	if(!empty($_POST['id']) && delete_delivery_user($_POST['id'])) echo json_encode(array("status"=>"success"));
 	else echo json_encode(array("status"=>"fail"));
 }
-else if(isset($_POST['action']) && $_POST['action'] == 'edit_employee'){
-	if(!empty($_POST['employee_id']) && update_employee($_POST)) echo json_encode(array("status"=>"success"));
+else if(isset($_POST['action']) && $_POST['action'] == 'edit_delivery_user'){
+	if(!empty($_POST['delivery_user_id']) && update_delivery_user($_POST)) echo json_encode(array("status"=>"success"));
 	else echo json_encode(array("status"=>"fail"));
 }
 else if(isset($_POST['action']) && $_POST['action'] == 'load_recipes')
@@ -318,7 +318,10 @@ else if(isset($_POST['action']) && $_POST['action'] == 'load_orders')
 }
 else if(isset($_POST['action']) && $_POST['action'] == 'order_types')
 {
-	if($_POST['order_id'] && order_handling($_POST['order_id'],$_POST['label']))
+	if($_POST['label'] == 'approve') $order_label = ORD_ACCEPTED;
+	if($_POST['label'] == 'cancel') $order_label = ORD_CANCELED;
+
+	if($_POST['order_id'] && order_handling($_POST['order_id'],$order_label))
 		echo json_encode(array("status"=>"success"));
 	else
 		echo json_encode(array("status"=>"fail"));
@@ -441,5 +444,13 @@ else if(isset($_POST['action']) && $_POST['action'] == 'save_settings'){
 		update_meta_value("pincodes",makesafe($_POST['pincodes']));
 	}
 	echo json_encode(array("status"=>"success"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'assign_delivery_user'){
+
+	echo json_encode(assign_delivery_user($_POST['assign_order_id'],$_POST['delivery_users'],$_POST['assign']));
+	/* if(assign_delivery_user($_POST['assign_order_id'],$_POST['delivery_users']))
+		echo json_encode(array("status"=>"success"));
+	else
+		echo json_encode(array("status"=>"fail")); */
 }
 ?>

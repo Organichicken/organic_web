@@ -13,7 +13,10 @@ $dbPassword = "vijay";
 $dbDatabase = "organic_chicken";
 $tz = "Asia/Kolkata";
 
+$ROOT_PATH = __DIR__ . '/';
+
 $link = db_connect($dbServer, $dbUsername, $dbPassword,$dbDatabase);
+$map_key = '';
 
 date_default_timezone_set($tz);
 ?>

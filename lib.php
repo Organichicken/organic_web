@@ -18,19 +18,20 @@ if($url != 'lcheck.php' && !isset($_SESSION['usr_email']) && !$API_ACCESS)
 	exit;
 }
 include("db_connect.php");
+include("constants.php");
 
 date_default_timezone_set($tz);
 session_write_close();
 //Added htmlspecialchars for security issues (VJ 30/05/20)
 function makesafe($string)
 {
-	$string = (get_magic_quotes_gpc() ? stripslashes($string) : $string);
+	// $string = (get_magic_quotes_gpc() ? stripslashes($string) : $string);
 	return db_escape(htmlspecialchars(trim($string)));		
 }
 //Old make safe
 function safetodisplay($string)
 {
-	$string = (get_magic_quotes_gpc() ? stripslashes($string) : $string);
+	// $string = (get_magic_quotes_gpc() ? stripslashes($string) : $string);
 	return htmlspecialchars_decode(stripslashes(db_escape($string)));		
 }
 //Function to execute the given query	
@@ -283,45 +284,47 @@ function update_item($data,$is_update_img)
 	return false;		
 }
 
-//Retrive all/given employees from DB
-function get_employees_data($id = null){
-	$employees_data = array();
+//Retrive all/given delivery_users from DB
+function get_delivery_users_data($id = null){
+	$delivery_users_data = array();
 	$query = "";
 	
 	if(!empty($id)){
-		$query = " WHERE employee_id = '".$id."'";
+		$query = " WHERE delivery_user_id = '".$id."'";
 	}
-	$res = db_query("SELECT * FROM `employees` ".$query);
+	$res = db_query("SELECT * FROM `delivery_users` ".$query);
 	
 	while($row = db_fetch_assoc($res))
 	{
-		$employees_data[] = $row;
+		$delivery_users_data[] = $row;
 	}
-	return $employees_data;
+	return $delivery_users_data;
 }
 
-// Add new employee (24-01-2021)
-function add_new_employee($data){
-	$q = "INSERT INTO `employees`(`first_name`, `last_name`, `email`, `phone`, `password`, `gender`, `active`, `last_updated_at`) VALUES ('".makesafe($data['first_name'])."','".makesafe($data['last_name'])."','".makesafe($data['emailaddress'])."','".makesafe($data['mobile_num'])."','','".makesafe($data['gender'])."','1','".get_current_time()."')";
-	// echo $q;
-	if(db_query($q)) return true;
+// Add new delivery_user (24-01-2021)
+function add_new_delivery_user($data){
+	$q = "INSERT INTO `delivery_users`(`delivery_user_id`, `first_name`, `last_name`, `email`, `phone`, `password`, `gender`, `active`, `last_updated_at`) VALUES ('".makesafe(generate_unique_id('delivery_user',"5"))."','".makesafe($data['first_name'])."','".makesafe($data['last_name'])."','".makesafe($data['emailaddress'])."','".makesafe($data['mobile_num'])."','".md5('abcdef')."','".makesafe($data['gender'])."','1','".get_current_time()."')";
+
+	if(db_query($q)){
+		return true;
+	};
 	
 	return false;
 }
 
-// Delete given employee (25-01-2021)
-function delete_employee($id)
+// Delete given delivery_user (25-01-2021)
+function delete_delivery_user($id)
 {
-	if(!empty($id) && db_query("DELETE FROM `employees` WHERE `employee_id` = '".$id."'")){
+	if(!empty($id) && db_query("DELETE FROM `delivery_users` WHERE `delivery_user_id` = '".$id."'")){
 		return true;
 	}	
 	return false;		
 }
 
-// Update given employee (25-01-2021)
-function update_employee($data)
+// Update given delivery_user (25-01-2021)
+function update_delivery_user($data)
 {
-	$q = "UPDATE `employees` SET `first_name`= '".makesafe($data['first_name'])."',`last_name`='".makesafe($data['last_name'])."',`email`='".makesafe($data['emailaddress'])."',`phone`='".makesafe($data['mobile_num'])."',`gender`='".makesafe($data['gender'])."',`last_updated_at`='".get_current_time()."' WHERE `employee_id` = '".makesafe($data['employee_id'])."'";
+	$q = "UPDATE `delivery_users` SET `first_name`= '".makesafe($data['first_name'])."',`last_name`='".makesafe($data['last_name'])."',`email`='".makesafe($data['emailaddress'])."',`phone`='".makesafe($data['mobile_num'])."',`gender`='".makesafe($data['gender'])."',`last_updated_at`='".get_current_time()."' WHERE `delivery_user_id` = '".makesafe($data['delivery_user_id'])."'";
 
 	if(db_query($q)){
 		return true;
@@ -442,14 +445,20 @@ function get_order_status($id){
 	}
 }
 //Update order status based on given parameters(07-03-2021)
-function order_handling($order_id,$label)
+function order_handling($order_id,$order_type)
 {
-	if($label == 'approve'){
-		$order_type = 2;
-	}else if($label == 'cancel'){
-		$order_type = 1;
-	}
-	if(db_query("UPDATE `orders` SET `status`='".$order_type."',`last_updated_time`='".get_current_time()."' WHERE `order_id` = ".$order_id))
+	if(empty($order_type) || empty($order_id)) return false;
+	// if($label == 'approve'){
+	// 	$order_type = ORD_ACCEPTED;
+	// }else if($label == 'cancel'){
+	// 	$order_type = ORD_CANCELED;
+	// }else if($label == 'delivered'){
+	// 	$order_type = ORD_DELIVERED;
+	// }else if($label == 'delivered'){
+	// 	$order_type = ORD_USER_CANCELED;
+	// }
+
+	if(db_query("UPDATE `orders` SET `status`='".$order_type."',`last_updated_time`='".get_current_time()."' WHERE `order_key` = '".$order_id."' "))
 		return true;
 	
 	return false;
@@ -708,7 +717,7 @@ function get_user_cart_count($user_id){
 
 //Generate a unique ID for given item
 function generate_unique_id($label,$length = 5){
-	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","employee"=> "#OCEMP","referral"=> "#OCREF","slider_image"=> "#OCSIM","home_video"=> "#OCHVI","tales"=>"#OCTAL","cart"=>"#OCCRT","address"=>"#OCADD");
+	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","delivery_user"=> "#OCDUSR","referral"=> "#OCREF","slider_image"=> "#OCSIM","home_video"=> "#OCHVI","tales"=>"#OCTAL","cart"=>"#OCCRT","address"=>"#OCADD");
 	
 	if($label && $items_array[$label])
 		return $items_array[$label]."_".generateRandomString($length);
@@ -742,4 +751,188 @@ function parse_items_data($items_data){
     }
     return $items;
 }
+//Conevert user readle address to geo co ordinates (08-05-21)
+function geocode_address($address){
+	global $map_key;
+
+	$googleQuery = $address['street'].' '.$address['city'].' '.$address['state'];
+	$url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode($googleQuery) . '&key='.$map_key;
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$geoloc = json_decode(curl_exec($ch), true);
+	$latitude = $geoloc['results'][0]['geometry']['location']['lat'];
+	// get lat for json
+	$longitude = $geoloc['results'][0]['geometry']['location']['lng'];
+	// get long for json
+	return array("latitue" => $latitude,"longitude" => $longitude);
+}
+
+function assign_delivery_user($order_id,$delivery_users_id,$assign = ''){
+	if(empty($assign)){
+		$res = db_query("SELECT * FROM `orders` WHERE `delivery_user` = '".$delivery_users_id."' AND (`status` = '".ORD_OUT_FOR_DELIVERY."' OR `status` = '".ORD_ASSIGN_TO_DELIVERY."' OR `order_key` = '".$order_id."')");
+		$other_orders = array();
+		/* echo "SELECT * FROM `orders` WHERE `delivery_user` = '".$delivery_users_id."' AND (`status` = '".ORD_OUT_FOR_DELIVERY."' OR `status` = '".ORD_ASSIGN_TO_DELIVERY."' OR `order_key` = '".$order_id."')";
+		exit; */
+		while ($row = db_fetch_assoc($res)) {
+			if($row['order_key'] == $order_id){
+				$cur_order_data = $row;
+				continue;
+			}
+			$other_orders[$row['status']][] = $row;
+		}
+		
+		$assgn_del = $out_del = 0;
+		//Check delivery user is already out for delivery
+		if(!empty($other_orders[ORD_OUT_FOR_DELIVERY])) $out_del++;
+		//Check delivery user is assigned to any other delivery
+		if(!empty($other_orders[ORD_ASSIGN_TO_DELIVERY])){
+			foreach ($other_orders[ORD_ASSIGN_TO_DELIVERY] as $order) {
+				if(strtotime($order['delivery_date']) == strtotime($cur_order_data['delivery_date'])){
+					$cur_order_slot = explode('-',$cur_order_data['delivery_slot']);
+					$cur_order_start = date('H:i:s',strtotime($cur_order_slot));
+					$cur_order_end = date('H:i:s',strtotime($cur_order_slot));
+
+					$order_slot = explode('-',$order['delivery_slot']);
+					$order_start = date('H:i:s',strtotime($order_slot));
+					$order_end = date('H:i:s',strtotime($order_slot));
+
+					if(($cur_order_start >= $order_start && $cur_order_start <= $order_end) || ($cur_order_end >= $order_start && $cur_order_end <= $order_end))
+						$assgn_del++;
+				}
+			}
+		}
+		if($assgn_del || $out_del){
+			return array('status' => 'conflict','assgn_del' => $assgn_del,'out_del' => $out_del);
+		}
+	}
+	if(db_query("UPDATE `orders` SET `delivery_user`= '".$delivery_users_id."',`status` = '".ORD_ASSIGN_TO_DELIVERY."',`last_updated_time` = '".get_current_time()."' WHERE `order_key` = '".$order_id."'")){
+		$tokens = get_user_device_tokens($delivery_users_id,"delivery_user_id");
+        $message = "New order is assign to you. Check it once.";
+        if(!empty($tokens['android'])){
+            $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
+            send_android_push_notification($tokens['android'], $message, $data);
+        }
+        if(!empty($tokens['ios'])){
+            // $json_string_payload='{"aps":	{ "alert": { "action-loc-key": "Open","body": "'.$message.'"},"badge": 1,"content-available": 1},"notify_type":"order"}';
+			// $result1 = send_apple_push_notifications($tokens['ios'],$json_string_payload);
+        }
+		return array('status' => 'success');
+	}
+	
+	return array('status' => 'fail');
+}
+
+function sent_msg_to_user($numbers){
+	if(!is_array($numbers)) return false;
+
+	 // Account details
+    $apiKey = urlencode('Dfti+cEHPyg-VWDXEcbM7MuoDHXUKJW73Hl0aLxRMN');
+
+    // Message details
+    // $numbers = array(918886810715);
+    $sender = urlencode('QWPARC');
+    $message = rawurlencode('Dear Customer, 1234 is OTP for your login request. Do Not disclose it to any one');
+
+    $numbers = implode(',', $numbers);
+
+    // Prepare data for POST request
+    $data = array('apikey' => $apiKey, 'numbers' => $numbers, "sender" => $sender, "message" => $message, "test" =>  true);
+
+    // Send the POST request with cURL
+    $ch = curl_init('https://api.textlocal.in/send/');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // Process your response here
+    echo "RESP ".$response;
+}
+// sent_msg_to_user(array("8886810715"));
+
+//Send android push notifications (VJ 16-05-21)
+function send_android_push_notification($device_tokens, $message, $data){
+	if(empty($device_tokens)) return false;
+	
+	global $ROOT_PATH;
+	include_once($ROOT_PATH .'notifications/firebase.php');
+
+	// $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"status"));
+
+	//getting the token from database object 
+	$device_tokens = array('djeM-QY3SrGMzXHAqZYz6m:APA91bEqaA42R445-sFcqK8BpBAgkyLpjxah8-4Ly-UUVGLoJROKtMtFKQ1ViR5vqmHSeBpOB9v_8QTkEEgibBJU7hoJMsQuqfcPHgf-bIP8YfYhC2dtedCmCke-3HAcbI56ygxU1DjO');
+
+	//creating firebase class object
+	$firebase = new Firebase(); 
+
+	//Set device tokens
+	$firebase->setDevices($device_tokens);
+
+	//sending push notification and displaying result 
+	$firebase->send($message, $data);
+}
+//Send apple push notifications (VJ 16-05-21)
+function send_apple_push_notifications($device_tokens,$json_string_payload)
+{
+	global $ROOT_PATH;
+	$msg_count=0;
+	try
+	{	
+		require_once($ROOT_PATH.'notifications/push_config.php');
+		require_once($ROOT_PATH.'notifications/push.php');
+		
+		$mode = "production";
+		$config = $config[$mode];		
+
+		writeToLog("Push script started ($mode mode)");
+
+		$obj = new APNS_Push($config);
+		
+		if(is_array($device_tokens))
+		{			
+			foreach($device_tokens as $single_token)
+			{
+				$obj->disconnectFromAPNS();
+				$obj->connectToAPNS();
+				if($obj->sendNotification($single_token,$json_string_payload))
+					$msg_count++;
+			}
+		}
+		else
+		{	
+			if($obj->sendNotification($device_tokens,$json_string_payload))
+				$msg_count++;
+		}
+	}
+	catch (Exception $e)
+	{
+		fatalError($e);
+	}
+	
+	if($msg_count>0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+function get_user_device_tokens($user_ids,$user_label){
+	
+	if(!is_array($user_ids)) $user_ids = array($user_ids);
+	$tokens = array();
+	// echo "SELECT `token`, `device` FROM `fcm_tokens` WHERE `".$user_label."` IN ('".implode('\',\'',$user_ids)."')";
+	$res = db_query("SELECT `token`, `device` FROM `fcm_tokens` WHERE `".$user_label."` IN ('".implode('\',\'',$user_ids)."')");
+
+	while ($row = db_fetch_assoc($res)) {
+		$tokens[$row['device']][] = $row['token'];
+	}
+	return $tokens;
+} 
 ?>

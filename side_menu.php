@@ -61,10 +61,10 @@
 						<span class="menu-text">Orders</span>
 					</a>
 				</li>
-				<li class="menu-item <?php if($current_page === 'employees') echo "menu-item-active"; ?>" aria-haspopup="true">
-					<a href="employees.php" class="menu-link">
+				<li class="menu-item <?php if($current_page === 'delivery_users') echo "menu-item-active"; ?>" aria-haspopup="true">
+					<a href="delivery_users.php" class="menu-link">
 						<span class="icon-xl pr-2 fas fa-truck"></span>
-						<span class="menu-text">Employees</span>
+						<span class="menu-text">Delivery Users</span>
 					</a>
 				</li>
 				<li class="menu-item <?php if($current_page === 'recipes') echo "menu-item-active"; ?>" aria-haspopup="true">

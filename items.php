@@ -58,7 +58,7 @@ $categories = get_categories_data('');
                             </div>
                             <div class="col-md-4 col-lg-4 col-sm-12">
                                 <div class="form-group">
-                                    <label for="emailaddress">Select Category</label>
+                                    <label for="category">Select Category</label>
                                     <select class="form-control select2" id="category" name="category">
                                         <option value="">Please select category</option>
                                         <?php
