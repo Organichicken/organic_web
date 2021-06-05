@@ -9,14 +9,19 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $user_phone = makesafe($_POST['phone']);
 $user_hash_key = makesafe($_POST['hash_key']);
-$user_id = !empty($_POST['user_id']) ? makesafe($_POST['user_id']) : ''; 
-if(!empty($user_phone) && !empty($user_hash_key) && !sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
-    $resp['status'] = 404;
-    $resp['message'] = "invalid user";
-    $resp['body'] = array();
-    echo json_encode($resp);
-    exit;
+$user_id = '';
+
+if(!empty($user_phone) && !empty($user_hash_key)){
+    if(!sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+        $resp['status'] = 404;
+        $resp['message'] = "invalid user";
+        $resp['body'] = array();
+        echo json_encode($resp);
+        exit;
+    }else
+        $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'");
 }
+
 $resp = $items_data = array();
 
 $resp['status'] = 200;

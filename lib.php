@@ -489,7 +489,7 @@ function get_offers_data($id = null,$filter = null){
 		$query = " AND offer_id = '".$id."'";
 	}
 	if($filter){
-		$query = " AND status = '1'";
+		$query = " AND status = '1' AND offer_end > '".get_current_time()."'";
 	}
 	$res = db_query("SELECT * FROM `offers` WHERE is_deleted = '0' ".$query." ORDER BY offer_start DESC ");
 	
@@ -934,5 +934,17 @@ function get_user_device_tokens($user_ids,$user_label){
 		$tokens[$row['device']][] = $row['token'];
 	}
 	return $tokens;
-} 
+}
+
+//Function to return multiple meta values for given meta key array values(VJ 25-05-21)
+function get_meta_values($meta_keys){
+	$meta_qry = db_query("SELECT `meta_value`,`meta_key` FROM `meta_data` WHERE `meta_key` IN ('".implode('\',\'',$meta_keys)."')");
+	$data = array();
+	while($row = db_fetch_assoc($meta_qry))
+	{
+		$data[$row['meta_key']] = $row['meta_value'];
+	}
+	
+	return $data;
+}
 ?>

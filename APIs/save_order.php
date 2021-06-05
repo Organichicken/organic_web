@@ -1,7 +1,7 @@
 <?php
 $API_ACCESS = true;
 include("../lib.php");
-error_reporting(E_ALL);
+// error_reporting(E_ALL);
 
 require('../razorpay/config.php');
 require('../razorpay/razorpay-php/Razorpay.php');
@@ -100,7 +100,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $order_address = sqlr("SELECT `name`, `phone`, `alternative_phone`, `house_no`, `building_name`, `street`, `landmark`, `pincode`, `locality`, `city`, `address_type` FROM `address` WHERE address_id = '".makesafe($_POST['address_id'])."'");
     $order_data['address'] = $order_address ? $order_address : array();
 
-    if($_POST['mode'] == 'cod'){
+    if(strtolower($_POST['mode']) == 'cod'){
         $trans_qry = db_query("INSERT INTO `payments`(`user_id`, `order_id`, `amount`, `mode`, `status`, `timestamp` ) VALUES ('".makesafe($user_id)."','".makesafe($order_key)."','".makesafe($final_order_total)."','offline','','".$now."')");
 
         if(!empty($order_offer['cashback'])){
@@ -109,7 +109,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')){
             db_query("INSERT INTO `user_wallet`(`user_id`, `amount`, `transaction_id`, `description`, `status`, `updated_at`) VALUES ('".db_escape($user_id)."','-".$user_wallet."','','Used wallet amount on order ".$order_key."','success','".$now."')");
         }
-    }elseif ($_POST['mode'] == 'online'){
+    }else if(strtolower($_POST['mode']) == 'online'){
         $api = new Api($keyId, $keySecret);
 
         $orderData = [

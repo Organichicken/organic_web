@@ -12,10 +12,10 @@ $resp = array();
 $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
 
-if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
-    db_query("DELETE FROM `cart` WHERE `item_id` = '".db_escape($_POST['item_id'])."' AND `user_id` = '".db_escape($_POST['user_id'])."'");
-    if(empty($_POST['quantity']) || db_query("INSERT INTO `cart`(`cart_id`, `item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".generate_unique_id("cart")."','".db_escape($_POST['item_id'])."','".db_escape($_POST['user_id'])."','".db_escape($_POST['quantity'])."','".date('Y-m-d H:i:s')."')")){
+    db_query("DELETE FROM `cart` WHERE `item_id` = '".db_escape($_POST['item_id'])."' AND `user_id` = '".$user_id."'");
+    if(empty($_POST['quantity']) || db_query("INSERT INTO `cart`(`cart_id`, `item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".generate_unique_id("cart")."','".db_escape($_POST['item_id'])."','".$user_id."','".db_escape($_POST['quantity'])."','".date('Y-m-d H:i:s')."')")){
         $resp['message'] = "success";
 
 		$user_wallet = 0;
@@ -24,7 +24,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         if(!empty($_POST['cart_data'])){
 			$actual_cart_total = $discount_cart_total = $final_cart_total = 0;
 			$delivery_charges = get_meta_value("delivery_charges");
-			$user_cart_data = get_user_cart_data(db_escape($_POST['user_id']));
+			$user_cart_data = get_user_cart_data(db_escape($user_id));
 			// echo json_encode($user_cart_data);
 			foreach ($user_cart_data as $row) {
 				$item = $row;
@@ -47,7 +47,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 				$cart_data['final_cart_total'] = (string)($final_cart_total + $delivery_charges);
 			}
 		}
-        $cart_data['cart_count'] = (string)sqlValue("SELECT COUNT(*) FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".db_escape($_POST['user_id'])."'");
+        $cart_data['cart_count'] = (string)sqlValue("SELECT COUNT(*) FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".db_escape($user_id)."'");
 		$cart_data['wallet_amount'] = (string)$user_wallet;
         $resp['body'] = $cart_data;
     }else{

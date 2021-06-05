@@ -9,15 +9,20 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $resp = $items_data = $trending_items = array();
 
-if(!empty($user_phone) && !empty($user_hash_key) && !sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
-    $resp['status'] = 404;
-    $resp['message'] = "invalid user";
-    $resp['body'] = array();
-    echo json_encode($resp);
-    exit;
-}
+$user_phone = db_escape($_POST['phone']);
+$user_hash_key = db_escape($_POST['hash_key']);
+$user_id = '';
 
-$user_id = !empty($_POST['user_id']) ? makesafe($_POST['user_id']) : '';
+if(!empty($user_phone) && !empty($user_hash_key)){
+    if(!sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+        $resp['status'] = 404;
+        $resp['message'] = "invalid user";
+        $resp['body'] = array();
+        echo json_encode($resp);
+        exit;
+    }else
+        $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'");
+}
 
 if(!empty($user_id))
     $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' LIMIT 6");
@@ -42,6 +47,8 @@ $final_data['trending_items'] = parse_items_data($trending_items);
 $final_data['recommended_items'] = parse_items_data($items_data);
 
 $final_data['categories'] = get_categories_data();
+$final_data['cart_count'] = empty($user_id) ? '0' : (string)sqlValue("SELECT COUNT(*) FROM `cart` as c LEFT OUTER JOIN items as it ON it.item_id = c.item_id WHERE user_id = '".$user_id."'");
+
 //Get video links data
 $video_data = get_meta_value('video_links');
 $final_video_data = $video_data ? json_decode($video_data,true) : array();

@@ -1,12 +1,22 @@
 <?php
 class Firebase {
  
-    $devices = array();
-
+    var $devices = array();
+	var $serverApiKey;
     //defined a new constant for firebase api key
-    define('FIREBASE_API_KEY', 'AAAAJ9OpIow:APA91bHUiKfX8BFoVI61O6mGSwYykOObuyZfck0jE_HY-46n8Me4fydynxKb6GM_w4h1feVtvUy1SXTjT934_yJzNchVmUUd6RrMJw92s2exLGPKJpndxq5z466KBueen2WBhd_c5r5z');
-
+    // define('FIREBASE_API_KEY', 'AAAAJ9OpIow:APA91bHUiKfX8BFoVI61O6mGSwYykOObuyZfck0jE_HY-46n8Me4fydynxKb6GM_w4h1feVtvUy1SXTjT934_yJzNchVmUUd6RrMJw92s2exLGPKJpndxq5z466KBueen2WBhd_c5r5z');
+	
+	/*
+		Constructor
+		@param $apiKeyIn the server API key
+	*/
+	/* function Firebase($apiKeyIn){
+		// $this->serverApiKey = $apiKeyIn;
+		$this->serverApiKey = "AAAAJ9OpIow:APA91bHUiKfX8BFoVI61O6mGSwYykOObuyZfck0jE_HY-46n8Me4fydynxKb6GM_w4h1feVtvUy1SXTjT934_yJzNchVmUUd6RrMJw92s2exLGPKJpndxq5z466KBueen2WBhd_c5r5z";
+	} */
+	
     public function send($message, $data) {
+		$this->serverApiKey = "AAAAJ9OpIow:APA91bHUiKfX8BFoVI61O6mGSwYykOObuyZfck0jE_HY-46n8Me4fydynxKb6GM_w4h1feVtvUy1SXTjT934_yJzNchVmUUd6RrMJw92s2exLGPKJpndxq5z466KBueen2WBhd_c5r5z";
         $fields = array(
             'registration_ids' => $this->devices,
             'data' => array( "message" => $message ),
@@ -42,10 +52,10 @@ class Firebase {
         $url = 'https://fcm.googleapis.com/fcm/send';   
 
         //building headers for the request
-        $headers = array(
-            'Authorization: key=' . FIREBASE_API_KEY,
-            'Content-Type: application/json'
-        );
+		$headers = array( 
+			'Authorization: key=' . $this->serverApiKey,
+			'Content-Type: application/json'
+		);
  
         //Initializing curl to open a connection
         $ch = curl_init();
@@ -78,5 +88,11 @@ class Firebase {
         //and return the result 
         return $result;
     }
+	
+	function error($msg){
+		echo "Android send notification failed with error:";
+		echo "\t" . $msg;
+		exit(1);
+	}
 }
 ?>

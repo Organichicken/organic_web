@@ -12,10 +12,10 @@ $user_hash_key = makesafe($_POST['hash_key']);
 
 $resp = $data = array();
 
-if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
+if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
     
-    $res = db_query("SELECT * FROM `address` WHERE user_id = '".makesafe($_POST['user_id'])."'");
+    $res = db_query("SELECT * FROM `address` WHERE user_id = '".$user_id."'");
     while($row = db_fetch_assoc($res))
     {
         unset($row['id']);

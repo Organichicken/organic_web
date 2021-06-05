@@ -20,29 +20,25 @@ $user_hash_key = db_escape($_POST['hash_key']);
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
 
-    if(empty($_POST['amount'])){
+    if(empty($_POST['razorpay_order_id'])){
         $resp['status'] = 500;
-        $resp['message'] = "amount cant be empty";
+        $resp['message'] = "razorpay_order_id cant be empty";
         echo json_encode($resp);
         exit;
     }
-    $api = new Api($keyId, $keySecret);
-
-    $walletData = [
-        'receipt'         => 3456,
-        'amount'          => makesafe($_POST['amount']) * 100, // amount rupees in paise
-        'currency'        => 'INR' //Currency
-    ];
-    $razorpayOrder = $api->order->create($walletData);
-
-    if(db_query("INSERT INTO `user_wallet`(`user_id`, `amount`, `razorpay_order_id`, `description`, `status`, `updated_at`) VALUES ('".$user_id."','+".db_escape($_POST['amount'])."','".$razorpayOrder['id']."','Added to wallet','pending','".date('Y-m-d H:i:s')."')")){
-        $resp['message'] = "";
-        $resp['razorpay_order_id'] = $razorpayOrder['id'];
-        $resp['body'] = array();
+    if(sqlValue("SELECT COUNT(*) FROM `user_wallet` WHERE `user_id` = '".$user_id."' AND `razorpay_order_id` = '".makesafe($_POST['razorpay_order_id'])."'")){
+        if(db_query("UPDATE `user_wallet` SET `razorpay_signature` = '".makesafe($_POST['razorpay_signature'])."',`razorpay_payment_id` = '".makesafe($_POST['razorpay_order_id'])."',`status`='success',`updated_at`='".date('Y-m-d H:i:s')."' WHERE `user_id` = '".$user_id."' AND `razorpay_order_id` = '".makesafe($_POST['razorpay_order_id'])."'")){
+            $resp['message'] = "successfully added to wallet";
+            $resp['body'] = array();
+        }else{
+            $resp['status'] = 500;
+            $resp['razorpay_order_id'] = '';
+            $resp['message'] = "something went wrong";
+        }
     }else{
         $resp['status'] = 500;
         $resp['razorpay_order_id'] = '';
-        $resp['message'] = "something went wrong";
+        $resp['message'] = "invalid razorpay_order_id";
     }
 }else{
     $resp['status'] = 404;
