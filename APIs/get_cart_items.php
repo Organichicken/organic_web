@@ -91,13 +91,21 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
                 $cart_offer['msg'] = 'invalid offer';
             }    
         }
-        if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')) $final_cart_total -= $user_wallet;
+        if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')){
+            if($user_wallet > $final_cart_total){
+                $cart_data['used_wallet'] = $final_cart_total;
+                $final_cart_total = 0;
+            }else{
+                $final_cart_total -= $user_wallet;
+                $cart_data['used_wallet'] = $user_wallet;
+            }
+        }
         $cart_data['actual_cart_total'] = (string)$actual_cart_total;
         $cart_data['discount_cart_total'] = (string)$discount_cart_total;
         $cart_data['delivery_charges'] = (string)$delivery_charges;
         $cart_data['final_cart_total'] = (string)($final_cart_total);
     }else{
-        $cart_data['actual_cart_total'] = $cart_data['discount_cart_total'] = $cart_data['delivery_charges'] = $cart_data['final_cart_total'] = '0';
+        $cart_data['actual_cart_total'] = $cart_data['discount_cart_total'] = $cart_data['delivery_charges'] = $cart_data['final_cart_total'] = $cart_data['used_wallet'] = '0';
 		$cart_data['items'] = array();
     }
     

@@ -11,7 +11,7 @@ $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
-    $resp['body'] = array();
+    $resp['body'] = (object)[];
     if(!empty($_POST['order_id'])){
         if(order_handling(makesafe($_POST['order_id']),ORD_USER_CANCELED)){
             $resp['status'] = 200;

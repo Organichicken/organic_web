@@ -13,7 +13,7 @@ $user_hash_key = makesafe($_POST['hash_key']);
 $resp = $final_orders = array();
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
-    $res = db_query("SELECT od.quantity as order_quantity,od.item_price,od.price,od.discount_price,it.item_name,it.item_id,it.item_image,o.status as order_status,o.order_key,o.order_data,o.order_at,o.delivery_date,o.delivery_slot,p.amount,p.mode,p.timestamp,p.status as payment_status,ors.rating,ors.review,ors.created_at as review_at FROM `order_details` as od LEFT OUTER JOIN items as it ON od.`item_id` = it.item_id LEFT OUTER JOIN orders as o ON o.`order_key` = od.order_id LEFT OUTER JOIN payments as p ON p.`order_id` = o.order_key LEFT OUTER JOIN order_ratings as ors ON ors.`order_id` = o.order_key WHERE o.user_id = '".$user_id."'");
+    $res = db_query("SELECT od.quantity as order_quantity,od.item_price,od.price,od.discount_price,it.item_name,it.item_id,it.item_image,o.status as order_status,o.order_key,o.order_data,o.order_at,o.delivery_date,o.delivery_slot,p.amount,p.mode,p.timestamp,p.status as payment_status,ors.rating,ors.review,ors.created_at as review_at FROM `order_details` as od LEFT OUTER JOIN items as it ON od.`item_id` = it.item_id LEFT OUTER JOIN orders as o ON o.`order_key` = od.order_id LEFT OUTER JOIN payments as p ON p.`order_id` = o.order_key LEFT OUTER JOIN order_ratings as ors ON ors.`order_id` = o.order_key WHERE o.user_id = '".$user_id."' ORDER BY o.delivery_date DESC");
 
     while($row = db_fetch_assoc($res))
     {
@@ -47,7 +47,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $orders_data[$row['order_key']]['payment_data'] = $payment_data;
         $orders_data[$row['order_key']]['ratings_data'] = $ratings_data;
         $orders_data[$row['order_key']]['order_data'] = $order_data;
-        $orders_data[$row['order_key']]['delivery_address'] = json_decode($row['order_data'],true)['address'];
+        $orders_data[$row['order_key']]['delivery_address'] = json_decode($row['order_data'],true)['address'] ? json_decode($row['order_data'],true)['address'] : (object)[];
     }
 
     foreach ($orders_data as $order_key => $order) {

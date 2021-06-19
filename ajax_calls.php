@@ -453,4 +453,23 @@ else if(isset($_POST['action']) && $_POST['action'] == 'assign_delivery_user'){
 	else
 		echo json_encode(array("status"=>"fail")); */
 }
+else if(isset($_POST['action']) && $_POST['action'] == 'load_member_ship_plans'){
+	$plans_data = get_meta_value('member_ship_plans');
+	$final_data = $plans_data ? json_decode($plans_data,true) : array();	
+	echo json_encode(array("data"=>$final_data));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_edit_member_ship_plan'){
+	if($_POST['plan_action'] == 'add_new_plan' && add_member_ship_plan($_POST))
+		echo json_encode(array("status"=>"success"));
+	else if($_POST['plan_action'] == 'edit_member_ship_plan' && update_member_ship_plan($_POST))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_member_ship_plan'){
+	if(!empty($_POST['id']) && delete_member_ship_plan($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
 ?>

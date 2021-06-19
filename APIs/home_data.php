@@ -51,35 +51,41 @@ $final_data['cart_count'] = empty($user_id) ? '0' : (string)sqlValue("SELECT COU
 
 //Get video links data
 $video_data = get_meta_value('video_links');
-$final_video_data = $video_data ? json_decode($video_data,true) : array();
-$final_data['video_links'] = $final_video_data;
+$final_data['video_links'] = $video_data ? json_decode($video_data,true) : array();
 
 //Get slider images data
 $images_data = get_meta_value('slider_images');
-$final_sliders_data = $images_data ? json_decode($images_data,true) : array();
-$final_data['slider_images'] = $final_sliders_data;
+$final_data['slider_images'] = $images_data ? json_decode($images_data,true) : array();
 
 //Get tales data
 $tales_data = get_meta_value('tales');
-$final_tales_data = $tales_data ? json_decode($tales_data,true) : array();
-$final_data['tales'] = $final_tales_data;
+$final_data['tales'] = $tales_data ? json_decode($tales_data,true) : array();
+
+//Get member ship plans (VJ 19/06/21)
+$plans_data = get_meta_value('member_ship_plans');
+$plans_data = $plans_data ? json_decode($plans_data,true) : array();
+$final_plans_data = array();
+foreach ($plans_data as $plan) {
+    if($plan['plan_days'] <= 45){
+        $plan['days_label'] = "days";
+    }else if($plan['plan_days'] < 360){
+        $plan['plan_days'] = (string)round($plan['plan_days'] / 30);
+        $plan['days_label'] = "months";
+    }else{
+        $plan['plan_days'] = (string)round($plan['plan_days'] / 365);
+        $plan['days_label'] = "year";
+    }
+    $final_plans_data[] = $plan;
+}
+$final_data['member_ship_plans'] = $final_plans_data;
 
 $final_data['user_info'] = (object)array();
 if(!empty($user_id))
     $final_data['user_info'] = sqlr("SELECT `user_id`, `first_name`, `email`, `phone`, `profile_pic`, `active`, `is_member`, `membership_ends` FROM `users` WHERE user_id = '".$user_id."' LIMIT 1");
-    ;
 
 $resp['status'] = 200;
 $resp['message'] = "success";
 $resp['body'] = $final_data;
-// if(db_num_rows($res)){
-    // $resp['status'] = 200;
-    // $resp['message'] = "success";
-    // $resp['body'] = $final_data;
-// }else{
-    // $resp['status'] = 500;
-    // $resp['message'] = "something went wrong";
-    // $resp['body'] = array();
-// }
+
 echo json_encode($resp);
 ?>

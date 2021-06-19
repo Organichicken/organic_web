@@ -717,7 +717,7 @@ function get_user_cart_count($user_id){
 
 //Generate a unique ID for given item
 function generate_unique_id($label,$length = 5){
-	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","delivery_user"=> "#OCDUSR","referral"=> "#OCREF","slider_image"=> "#OCSIM","home_video"=> "#OCHVI","tales"=>"#OCTAL","cart"=>"#OCCRT","address"=>"#OCADD");
+	$items_array = array("category"=> "#OCCAT","item"=> "#OCITM","order"=> "#OCORD","recipe"=> "#OCRCP","offer"=> "#OCOFR","user"=> "#OCUSR","delivery_user"=> "#OCDUSR","referral"=> "#OCREF","slider_image"=> "#OCSIM","home_video"=> "#OCHVI","tales"=>"#OCTAL","cart"=>"#OCCRT","address"=>"#OCADD","member_ship_plan"=>"#OCPLN");
 	
 	if($label && $items_array[$label])
 		return $items_array[$label]."_".generateRandomString($length);
@@ -864,7 +864,7 @@ function send_android_push_notification($device_tokens, $message, $data){
 	// $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"status"));
 
 	//getting the token from database object 
-	$device_tokens = array('djeM-QY3SrGMzXHAqZYz6m:APA91bEqaA42R445-sFcqK8BpBAgkyLpjxah8-4Ly-UUVGLoJROKtMtFKQ1ViR5vqmHSeBpOB9v_8QTkEEgibBJU7hoJMsQuqfcPHgf-bIP8YfYhC2dtedCmCke-3HAcbI56ygxU1DjO');
+	// $device_tokens = array('djeM-QY3SrGMzXHAqZYz6m:APA91bEqaA42R445-sFcqK8BpBAgkyLpjxah8-4Ly-UUVGLoJROKtMtFKQ1ViR5vqmHSeBpOB9v_8QTkEEgibBJU7hoJMsQuqfcPHgf-bIP8YfYhC2dtedCmCke-3HAcbI56ygxU1DjO');
 
 	//creating firebase class object
 	$firebase = new Firebase(); 
@@ -946,5 +946,48 @@ function get_meta_values($meta_keys){
 	}
 	
 	return $data;
+}
+
+//Add member ship plan (19-06-2021)
+function add_member_ship_plan($data)
+{
+	$plans_data = get_meta_value('member_ship_plans');
+	$final_data = $plans_data ? json_decode($plans_data,true) : array();
+
+	array_push($final_data,array("id"=>generate_unique_id("member_ship_plan"),"plan_days"=>makesafe($data['plan_days']),"plan_price"=>makesafe($data['plan_price']),"description"=>makesafe($data['plan_description'])));
+	
+	return update_meta_value('member_ship_plans',json_encode($final_data));
+}
+
+//Update member ship plan (19-06-2021)
+function update_member_ship_plan($data)
+{
+	$plans_data = get_meta_value('member_ship_plans');
+	$final_data = $plans_data ? json_decode($plans_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] == $data['new_plan_id'])
+		{
+			$value['plan_days'] = makesafe($data['plan_days']);
+			$value['plan_price'] = makesafe($data['plan_price']);
+			$value['description'] = makesafe($data['plan_description']);
+		} 
+		array_push($new_data,$value);
+	}
+	
+	return update_meta_value('member_ship_plans',json_encode($new_data));
+}
+
+//Delete member ship plan (19-06-2021)
+function delete_member_ship_plan($id)
+{
+	$plans_data = get_meta_value('member_ship_plans');
+	$final_data = $plans_data ? json_decode($plans_data,true) : array();
+	$new_data = array();
+	foreach ($final_data as $value) {
+		if($value['id'] != $id) array_push($new_data,$value);
+	}
+	
+	return update_meta_value('member_ship_plans',json_encode($new_data));
 }
 ?>

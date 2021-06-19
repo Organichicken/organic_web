@@ -17,6 +17,9 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
 #slider_images_div .card,#tale_images_div .card{
     border: 2px solid black;
 }
+/* .accordion.accordion-solid .card {
+    border: 1px solid #3699ff !important;
+} */
 </style>
 <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <div class="container-fluid">
@@ -145,6 +148,33 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                         </div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title collapsed" data-toggle="collapse" data-target="#membership">
+                            <i class="fas fa-address-card"></i> Membership Plans
+                        </div>
+                    </div>
+                    <div id="membership" class="collapse" data-parent="#accordion_settings">
+                        <div class="card-body">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary float-right btn-shadow font-weight-bold mb-2" id="add_new_member_ship_plan"><i class="fas fa-plus"></i> Add New Plan</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="member_ship_palns_table" class="table less_border table-striped table-bordered no-wrap">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Days</th>
+                                            <th>Price</th>
+                                            <th>Description</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -179,6 +209,49 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                             <div class="form-group text-right">
                                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
                                 <button type="button" id="submit_add_video_btn" class="btn btn-success"><i class="fas fa-check"></i> Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Add/Edit video link modal -->
+<div id="add_edit_member_ship_plan_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 55%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add New Plan</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <form class="pl-3 pr-3" id="new_member_ship_form" method="POST">
+                    <input type="hidden" name="new_plan_id" id="new_plan_id">
+                    <input type="hidden" id="plan_action" name="plan_action">
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3 col-sm-6">
+                            <div class="form-group">
+                                <label for="name">Plan Days</label>
+                                <input class="form-control" type="number" id="plan_days" name="plan_days" placeholder="Enter plan days" min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-sm-6">
+                            <div class="form-group">
+                                <label for="url">Price</label>
+                                <input class="form-control" type="number" id="plan_price" name="plan_price" placeholder="Enter plan price" min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="url">Plan Description</label>
+                                <textarea class="form-control" name="plan_description" id="plan_description" cols="10" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="form-group text-right">
+                                <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                                <button type="button" id="submit_member_ship_plan" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
                             </div>
                         </div>
                     </div>
@@ -280,7 +353,7 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
 <?php include('footer.php'); ?>
 <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
-    var video_table;
+    var video_table,member_ship_palns_table;
     var slider_image_div = new KTImageInput('slider_image_div');
     var tale_image_div = new KTImageInput('tale_image_div');
     var edit_video = function (id,ele) {
@@ -316,15 +389,59 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
             }
         });
     }
-
+    //Delete member ship plan (19/06/21)
+    var delete_plan = function (id) {
+        Swal.fire({
+            title: "Are you sure want to delete this plan?", icon: "warning",
+            showCancelButton: true, confirmButtonText: "Yes"
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    url: "ajax_calls.php", dataType: "json", type: "POST",
+                    data: { "id": id, "action": "delete_member_ship_plan" },
+                    success: function (resp) {
+                        if (resp.status === 'success') {
+                            toastr["success"]("", "Plan successfully deleted");
+                            member_ship_palns_table.ajax.reload();
+                        } else {
+                            toastr["error"](" ", "Failed to delete plan")
+                        }
+                    }, error: function (xhr, status, error) {
+                        toastr["error"](" ", "Oops! Something went wrong");
+                    }
+                })
+            } else {
+                Swal.fire({ icon: "error", title: "Cancelled!", showConfirmButton: false, timer: 1500 });
+            }
+        });
+    }
+    var edit_plan = function (id,ele) {
+        $('#plan_action').val('edit_member_ship_plan');
+        $('#new_plan_id').val(id);
+        $('#plan_days').val($(ele).closest('tr').find('td').eq(1).html());
+        $('#plan_price').val($(ele).closest('tr').find('td').eq(2).html());
+        $('#plan_description').html($(ele).closest('tr').find('td').eq(3).html());
+        $('#add_edit_member_ship_plan_modal .modal-header').find('.modal-title').html("Edit plan");
+        $('#add_edit_member_ship_plan_modal').modal('show');
+    }
     $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip();
+        //Add video btn
         $('#add_video_link_btn').click(() => {
             $('#video_links_form').trigger("reset");
             $('#video_action').val('add_video_link');
             $('#video_action_id').val('');
             $('#add_edit_video_modal .modal-header').find('.modal-title').html("Add video link");
             $('#add_edit_video_modal').modal('show');
+        });
+        //Add new member ship btn (19/06/21)
+        $('#add_new_member_ship_plan').click(() => {
+            $('#new_member_ship_form').trigger("reset");
+            $('#plan_action').val('add_new_plan');
+            $('#new_plan_id').val('');
+            $('#plan_description').html('');
+            $('#add_edit_member_ship_plan_modal .modal-header').find('.modal-title').html("Add new plan");
+            $('#add_edit_member_ship_plan_modal').modal('show');
         });
         $('#save_settings_btn').click(() => {
             $('#save_settings_form').ajaxSubmit({
@@ -377,6 +494,37 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                 }                
             ],
             "columns": video_cols,
+            "order": [
+                [0, "asc"]
+            ]
+        });
+        var plan_cols = [{ "data": "id" }, { "data": "plan_days" }, { "data": "plan_price" }, {"data": "description"}];
+
+        member_ship_palns_table = $('#member_ship_palns_table').DataTable({
+            searching: false, paging: false, info: false,
+            "ajax": {
+                "url": "ajax_calls.php",
+                "type": "POST",
+                "data": { 'action': 'load_member_ship_plans' }
+            },
+            "columnDefs": [
+                { "className": "dt-center", "targets": [0] },
+                {
+                    "render": function (data, type, row) {
+                        return `<span><a href="#" onclick="edit_plan('${row['id']}',this)" class="btn btn-icon btn-circle btn-light-skype mr-2">
+                        <i class="fas fa-pen"></i>
+                    </a>&nbsp<a href="#" onclick="delete_plan('${row['id']}')" class="btn btn-icon btn-circle btn-light-youtube">
+                        <i class="fas fa-trash"></i>
+                    </a></span>`;
+                    }, "targets": 4
+                },
+                {
+                    "render": function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }  , "targets": 0
+                }                
+            ],
+            "columns": plan_cols,
             "order": [
                 [0, "asc"]
             ]
@@ -446,6 +594,27 @@ $tales_data = $tales_images ? json_decode($tales_images,true) : array();
                     });
                 }
             });
+        });
+        
+        $('#submit_member_ship_plan').on('click', function (e) {
+            e.preventDefault();
+
+            $('#new_member_ship_form').ajaxSubmit({
+                url: "ajax_calls.php", dataType: "json", type: "POST",
+                "data": { 'action': 'add_edit_member_ship_plan' },
+                success: function (resp) {
+                    if (resp.status === 'success') {
+                        toastr["success"]("", "New plan successfully added");
+                        member_ship_palns_table.ajax.reload();
+                    } else {
+                        toastr["error"](" ", "Failed to add new plan")
+                    }
+                    $("#add_edit_member_ship_plan_modal").modal("hide");
+                }, error: function (xhr, status, error) {
+                    toastr["error"](" ", "Oops! Something went wrong");
+                    $("#add_edit_member_ship_plan_modal").modal("hide");
+                }
+            })
         });
 
         $('#add_slider_image_btn').click(() => {
