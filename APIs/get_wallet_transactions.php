@@ -16,10 +16,10 @@ if(empty($user_phone) || empty($user_hash_key)){
 
 $resp = $data = array();
 
-if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
-    
-    $data['user_info'] = sqlr("SELECT `user_id`, `first_name`, `email`, `phone`, `profile_pic`, `active`, `is_member`, `membership_ends` FROM `users` WHERE user_id = '".$user_id."' LIMIT 1");
-    $data['user_address'] = sqlr("SELECT `user_id`, `address_id`, `name`, `phone`, `alternative_phone`, `house_no`, `building_name`, `street`, `landmark`, `pincode`, `locality`, `city`, `address_type`, `is_default_address` FROM `address` WHERE user_id = '".$user_id."' AND is_default_address = '1' LIMIT 1");
+if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'" )){
+    $data['user_transactions'] = get_user_wallet_data($user_id);
+	$current_wallet_bal = sqlValue("SELECT SUM(`amount`) FROM `user_wallet` WHERE `user_id` = '".$user_id."' AND `status` = 'success'");
+    $data['wallet_balance'] = $current_wallet_bal;
     
     $resp['status'] = 200;
     $resp['message'] = "success";
@@ -29,6 +29,5 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $resp['message'] = "invalid user";
     $resp['body'] = array();
 }
-
 echo json_encode($resp);
 ?>

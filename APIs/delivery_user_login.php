@@ -9,7 +9,10 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $user_phone = db_escape($_POST['phone']);
 $user_password = db_escape($_POST['password']);
-
+if(empty($user_phone) || empty($user_password)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 $resp = array();
 $usr_qry = db_query("SELECT * FROM `delivery_users` WHERE `password` = '".md5($user_password)."' AND `phone` = '".$user_phone."' LIMIT 1");
 

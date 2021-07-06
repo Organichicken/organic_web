@@ -1,11 +1,9 @@
 <?php
 error_reporting(0);
+ini_set('display_errors', 0);
 $url = basename($_SERVER['REQUEST_URI']);
 $app = explode("/",$_SERVER['REQUEST_URI']);
 $app_name = $app[1];
-
-/* $referer_app  = explode("/",$_SERVER['HTTP_REFERER']);
-$referer_name = $referer_app[4]; */
 
 $VERSION = '1.0';//For CSS and JS files to prevent cache issue for new releases.
 $AUTO_COMPLETE_CODE=' autocomplete="cc-csc" ';
@@ -415,7 +413,7 @@ function get_order_details($id){
 	$orders_data = array();
 	if(empty($id)) return $orders_data;
 
-	$res = db_query("SELECT od.quantity as order_quantity,od.item_price,od.price,od.discount_price,it.item_name,it.item_image,o.status as order_status,o.order_key,o.order_at,p.amount,p.mode,p.timestamp,p.status as payment_status FROM `order_details` as od LEFT OUTER JOIN items as it ON od.`item_id` = it.item_id LEFT OUTER JOIN orders as o ON o.`order_id` = od.order_id LEFT OUTER JOIN payments as p ON p.`order_id` = o.order_id WHERE o.`order_id` = ".$id);
+	$res = db_query("SELECT od.quantity as order_quantity,od.item_price,od.price,od.discount_price,it.item_name,it.item_image,o.status as order_status,o.order_key,o.order_at,p.amount,p.mode,p.timestamp,p.status as payment_status FROM `order_details` as od LEFT OUTER JOIN items as it ON od.`item_id` = it.item_id LEFT OUTER JOIN orders as o ON o.`order_key` = od.order_id LEFT OUTER JOIN payments as p ON p.`order_id` = o.order_key WHERE o.`order_key` = '".$id."'");
 	
 	while($row = db_fetch_assoc($res))
 	{
@@ -423,7 +421,7 @@ function get_order_details($id){
 	}
 	return $orders_data;
 }
-
+//Get order status
 function get_order_status($id){
 	switch ($id) {
 		case '0':
@@ -433,10 +431,19 @@ function get_order_status($id){
 			return "cancelled";
 			break;
 		case '2':
-			return "in process";
+			return "accepted";
+			break;
+		case '3':
+			return "assign to delivery";
 			break;
 		case '4':
-			return "completed";
+			return "Out for delivery";
+			break;
+		case '5':
+			return "delivered";
+			break;
+		case '6':
+			return "user cancelled";
 			break;
 		
 		default:
@@ -448,18 +455,34 @@ function get_order_status($id){
 function order_handling($order_id,$order_type)
 {
 	if(empty($order_type) || empty($order_id)) return false;
-	// if($label == 'approve'){
-	// 	$order_type = ORD_ACCEPTED;
-	// }else if($label == 'cancel'){
-	// 	$order_type = ORD_CANCELED;
-	// }else if($label == 'delivered'){
-	// 	$order_type = ORD_DELIVERED;
-	// }else if($label == 'delivered'){
-	// 	$order_type = ORD_USER_CANCELED;
-	// }
 
-	if(db_query("UPDATE `orders` SET `status`='".$order_type."',`last_updated_time`='".get_current_time()."' WHERE `order_key` = '".$order_id."' "))
+	if(db_query("UPDATE `orders` SET `status`='".$order_type."',`last_updated_time`='".get_current_time()."' WHERE `order_key` = '".$order_id."' ")){
+		$user_id = sqlValue("SELECT `user_id` FROM `orders` WHERE `order_key` = '".$order_id."'");
+		$tokens = get_user_device_tokens($user_id,"user_id");
+
+		if($order_type == ORD_USER_CANCELED)
+        	$message = "Your order cancelled successfully.";
+		else if($order_type == ORD_ACCEPTED)
+        	$message = "Your order is accepted.";
+		else if($order_type == ORD_CANCELED)
+        	$message = "Sorry! Your order is cancelled.";
+		else if($order_type == ORD_DELIVERED)
+        	$message = "Your order has been successfully delivered.";
+		else if($order_type == ORD_OUT_FOR_DELIVERY)
+        	$message = "Your order is out for delivery.";
+		else if($order_type == ORD_ASSIGN_TO_DELIVERY)
+        	$message = "Your order has been assgined.";
+
+		if(!empty($tokens['android'])){
+			$data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
+			send_android_push_notification($tokens['android'], $message, $data);
+		}
+		if(!empty($tokens['ios'])){
+			// $json_string_payload='{"aps":	{ "alert": { "action-loc-key": "Open","body": "'.$message.'"},"badge": 1,"content-available": 1},"notify_type":"order"}';
+			// $result1 = send_apple_push_notifications($tokens['ios'],$json_string_payload);
+		}
 		return true;
+	}
 	
 	return false;
 }
@@ -808,7 +831,7 @@ function assign_delivery_user($order_id,$delivery_users_id,$assign = ''){
 			return array('status' => 'conflict','assgn_del' => $assgn_del,'out_del' => $out_del);
 		}
 	}
-	if(db_query("UPDATE `orders` SET `delivery_user`= '".$delivery_users_id."',`status` = '".ORD_ASSIGN_TO_DELIVERY."',`last_updated_time` = '".get_current_time()."' WHERE `order_key` = '".$order_id."'")){
+	if(order_handling($order_id,ORD_ASSIGN_TO_DELIVERY) && db_query("UPDATE `orders` SET `delivery_user`= '".$delivery_users_id."',`last_updated_time` = '".get_current_time()."' WHERE `order_key` = '".$order_id."'")){
 		$tokens = get_user_device_tokens($delivery_users_id,"delivery_user_id");
         $message = "New order is assign to you. Check it once.";
         if(!empty($tokens['android'])){
@@ -989,5 +1012,25 @@ function delete_member_ship_plan($id)
 	}
 	
 	return update_meta_value('member_ship_plans',json_encode($new_data));
+}
+
+//Function to return user wallet transactions (VJ 25-06-21)
+function get_user_wallet_data($user_id){
+	$wallet_trasactions = array();
+	$meta_qry = db_query("SELECT  `amount`, `description`, `status`, `updated_at` FROM `user_wallet` WHERE `user_id` = '".$user_id."'");
+
+	while($row = db_fetch_assoc($meta_qry))
+	{
+		$wallet_trasactions[] = $row;
+	}
+	
+	return $wallet_trasactions;
+}
+//Function will send response to API's and exit (VJ 06-07-21)
+function send_response_warning($status,$msg,$body){
+	$resp['status'] = $status;
+    $resp['message'] = $msg;
+    $resp['body'] = $body;
+    echo json_encode($resp);
 }
 ?>

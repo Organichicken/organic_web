@@ -16,6 +16,10 @@ $resp = array();
 
 $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
+if(empty($user_phone) || empty($user_hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
@@ -40,12 +44,19 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 
     $member_ship_data = [
         'receipt'         => 6789,
-        'amount'          => makesafe($plan['plan_price']) * 100, // amount rupees in paise
+        'amount'          => makesafe($plan_data['plan_price']) * 100, // amount rupees in paise
         'currency'        => 'INR' //Currency
     ];
     $razorpayOrder = $api->order->create($member_ship_data);
     $plan_start = date('Y-m-d H:i:s');
-    $plan_end = date('Y-m-d H:i:s',strtotime($plan_start.' + '.$plan_data['plan_days'].' day'));
+    if($plan_data['plan_days'] <= 45){
+        $plan_end = date('Y-m-d H:i:s',strtotime($plan_start.' + '.$plan_data['plan_days'].' day'));
+    }else if($plan_data['plan_days'] < 365){
+        $plan_end = date('Y-m-d H:i:s',strtotime($plan_start.' + '.$plan_data['plan_days']/30 .' month'));
+    }else if($plan_data['plan_days'] >= 365){
+        $plan_end = date('Y-m-d H:i:s',strtotime($plan_start.' + '.$plan_data['plan_days']/365 .' year'));
+    }
+
     if(db_query("INSERT INTO `user_member_ship_data`(`user_id`, `razorpay_order_id`, `amount`, `member_ship_start`, `member_ship_end`, `payment_status`, `updated_at`, `extra_data`) VALUES ('".$user_id."','".$razorpayOrder['id']."','".db_escape($plan_data['plan_price'])."','".$plan_start."','".$plan_end."','pending','".date('Y-m-d H:i:s')."','".json_encode($plan_data)."')")){
         $resp['message'] = "";
         $resp['razorpay_order_id'] = $razorpayOrder['id'];

@@ -238,7 +238,7 @@ $delivery_users = get_delivery_users_data();
                         }else if(row['status'] == '<?php echo ORD_NEW_ORDER; ?>'){
                             return  `<span class="label label-lg label-light-danger label-inline">Canceled</span>`;
                         }else if(row['status'] == '<?php echo ORD_ACCEPTED; ?>'){
-                            return  `<span class="label label-lg label-light-success label-inline">Accepted</span>`;
+                            return  `<button data-toggle="tooltip" data-theme="dark" title="Assign Delivery" type="button" class="btn btn-light-info btn-sm ml-2 assign_delivery_btn" value="${row['order_key']}"><i class="fas fa-truck"></i></button>`;
                         }else if(row['status'] == '<?php echo ORD_ASSIGN_TO_DELIVERY; ?>'){
                             return  `<span class="label label-lg label-light-info label-inline">Assigned for delivery</span>`;
                         }else if(row['status'] == '<?php echo ORD_DELIVERED; ?>'){

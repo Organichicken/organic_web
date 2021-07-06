@@ -11,6 +11,10 @@ $resp = array();
 
 $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
+if(empty($user_phone) || empty($user_hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
@@ -23,7 +27,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $delivery_charges = $global_meta_data['delivery_charges'];
     $min_cart_val = $global_meta_data['min_cart_val'];
     $user_cart_data = get_user_cart_data(db_escape($user_id));
-    $user_wallet = sqlValue("SELECT SUM(amount) FROM `user_wallet` WHERE `user_id` = '".$user_id."'");
+    $user_wallet = sqlValue("SELECT SUM(`amount`) FROM `user_wallet` WHERE `user_id` = '".$user_id."' AND `status` = 'success'");
     $user_wallet = $user_wallet ? $user_wallet : 0;
     
     foreach ($user_cart_data as $row) {
@@ -91,6 +95,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
                 $cart_offer['msg'] = 'invalid offer';
             }    
         }
+        $cart_data['used_wallet'] = 0;
         if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')){
             if($user_wallet > $final_cart_total){
                 $cart_data['used_wallet'] = $final_cart_total;
@@ -109,7 +114,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 		$cart_data['items'] = array();
     }
     
-    $cart_data['wallet_amount'] = (string)$user_wallet;
+    $cart_data['wallet_amount'] = (string)($user_wallet - $cart_data['used_wallet']);
     $cart_data['min_cart_value'] = (string)$min_cart_val;
     $cart_data['offer_details'] = $cart_offer;
     $resp['body'] = $cart_data;

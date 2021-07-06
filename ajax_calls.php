@@ -311,7 +311,7 @@ else if(isset($_POST['action']) && $_POST['action'] == 'load_orders')
 		$temp_data['category_image'] = $row['category_image'];
 		$temp_data['quantity'] = $row['quantity'];
 		$temp_data['weight_type'] = $row['weight_type'] === 'grams' ? 'Grams' : 'Kgs'; */
-		$row['DT_RowId'] = $row['order_id'];
+		$row['DT_RowId'] = $row['order_key'];
 		$final_data[] = $row;
 	}
 	echo json_encode(array("data"=>$final_data));

@@ -9,6 +9,10 @@ update_api_insights($url,$_REQUEST ? json_encode($_REQUEST) : '');
 
 $user_phone = makesafe($_REQUEST['phone']);
 $user_hash_key = makesafe($_REQUEST['hash_key']);
+if(empty($user_phone) || empty($user_hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 
 $resp = array();
 

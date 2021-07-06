@@ -9,6 +9,10 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $user_phone = db_escape($_POST['phone']);
 $hash_key = db_escape($_POST['hash_key']);
+if(empty($user_phone) || empty($hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 
 $resp = array();
 $usr_qry = db_query("SELECT `delivery_user_id` FROM `delivery_users` WHERE `hash_key` = '".$hash_key."' AND `phone` = '".$user_phone."' LIMIT 1");

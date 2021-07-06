@@ -9,8 +9,8 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $resp = array();
 
-$user_phone = db_escape($_POST['phone']);
-$user_hash_key = db_escape($_POST['hash_key']);
+/* $user_phone = db_escape($_POST['phone']);
+$user_hash_key = db_escape($_POST['hash_key']); */
 
 // if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'"))
 {

@@ -9,6 +9,10 @@ update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
 $user_phone = db_escape($_POST['phone']);
 $user_otp = db_escape($_POST['otp']);
+if(empty($user_phone) || empty($user_otp)){
+    send_response_warning(500,"phone or otp is missing",array());
+    exit;
+}
 
 $resp = array();
 

@@ -11,7 +11,10 @@ $resp = $items_data = array();
 
 $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
-
+if(empty($user_phone) || empty($user_hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
     $resp['status'] = 200;
     if(db_query("DELETE FROM `address` WHERE `address_id` = '".makesafe($_POST['address_id'])."'")){

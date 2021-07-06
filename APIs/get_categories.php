@@ -7,8 +7,8 @@ $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERV
 $url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 update_api_insights($url,$_POST ? json_encode($_POST) : '');
 
-$user_phone = makesafe($_POST['phone']);
-$user_hash_key = makesafe($_POST['hash_key']);
+/* $user_phone = makesafe($_POST['phone']);
+$user_hash_key = makesafe($_POST['hash_key']); */
 
 $resp = $data = array();
 

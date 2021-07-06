@@ -16,16 +16,18 @@ $resp = array();
 
 $user_phone = db_escape($_POST['phone']);
 $user_hash_key = db_escape($_POST['hash_key']);
+if(empty($user_phone) || empty($user_hash_key)){
+    send_response_warning(500,"phone or hash key is missing",array());
+    exit;
+}
+if(empty($_POST['amount'])){
+    send_response_warning(500,"amount cant be empty",array());
+    exit;
+}
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
-
-    if(empty($_POST['amount'])){
-        $resp['status'] = 500;
-        $resp['message'] = "amount cant be empty";
-        echo json_encode($resp);
-        exit;
-    }
+    
     $api = new Api($keyId, $keySecret);
 
     $walletData = [
