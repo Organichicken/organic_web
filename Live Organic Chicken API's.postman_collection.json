@@ -1,0 +1,2153 @@
+{
+	"info": {
+		"_postman_id": "6a8ab887-40d9-4f64-937c-0764e29dd00c",
+		"name": "Live Organic Chicken API's",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Delivery User",
+			"item": [
+				{
+					"name": "Delivery user login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "abcdef",
+									"type": "text"
+								},
+								{
+									"key": "fcm_token",
+									"value": "djeM-QY3SrGMzXHAqZYz6m:APA91bEqaA42R445-sFcqK8BpBAgkyLpjxah8-4Ly-UUVGLoJROKtMtFKQ1ViR5vqmHSeBpOB9v_8QTkEEgibBJU7hoJMsQuqfcPHgf-bIP8YfYhC2dtedCmCke-3HAcbI56ygxU1DjO",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://organichicken.in/admin-panel/APIs/delivery_user_login.php",
+							"protocol": "https",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"delivery_user_login.php"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order Delivery",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "hash_key",
+									"value": "cda82cd0f29c3c8a378f2147d01b0428",
+									"type": "text"
+								},
+								{
+									"key": "order_id",
+									"value": "#OCORD_AmnOE",
+									"type": "text"
+								},
+								{
+									"key": "order_type",
+									"value": "order_delivered",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "order_type",
+									"value": "out_for_delivery",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://organichicken.in/admin-panel/APIs/order_delivery.php",
+							"protocol": "https",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"order_delivery.php"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delivery user home data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "hash_key",
+									"value": "aef712858703465d52d4279803088f04",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://organichicken.in/admin-panel/APIs/delivery_home_data.php",
+							"protocol": "https",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"delivery_home_data.php"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Check User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/user_check.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"user_check.php"
+					]
+				},
+				"description": "check user already exists or not, if exists will send OTP."
+			},
+			"response": [
+				{
+					"name": "Failed case",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://organichicken.in/admin-panel/APIs/user_check.php?phone=8886810718",
+							"protocol": "http",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"user_check.php"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "8886810718"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 10 Jan 2021 17:29:26 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.46 (Win64) OpenSSL/1.1.1h PHP/7.4.12"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.12"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Length",
+							"value": "55"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "{\"status\":300,\"message\":\"User doesnt exists\",\"body\":\"\"}"
+				},
+				{
+					"name": "success case",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://organichicken.in/admin-panel/APIs/user_check.php?phone=8886810715",
+							"protocol": "http",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"user_check.php"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "8886810715"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 10 Jan 2021 17:24:51 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.46 (Win64) OpenSSL/1.1.1h PHP/7.4.12"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.12"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Length",
+							"value": "59"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "{\"status\":200,\"message\":\"valid user\",\"body\":{\"otp\":902074}}"
+				}
+			]
+		},
+		{
+			"name": "Order Payments",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "{{VJ Phone}}",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "order_id",
+							"value": "#OCORD_ieaos",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_order_id",
+							"value": "order_HEjJQgR4TaLNEg",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_signature",
+							"value": "asdsa",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_payment_id",
+							"value": "arafd",
+							"type": "text"
+						},
+						{
+							"key": "mode",
+							"value": "upi",
+							"type": "text"
+						},
+						{
+							"key": "status",
+							"value": "success",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "170",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/order_payment.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"order_payment.php"
+					]
+				},
+				"description": "check user already exists or not, if exists will send OTP."
+			},
+			"response": []
+		},
+		{
+			"name": "Verify user OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "otp",
+							"value": "123456",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/verify_user_otp.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"verify_user_otp.php"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Invalid OTP/Phone Case",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "543423",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://organichicken.in/admin-panel/APIs/verify_user_otp.php",
+							"protocol": "http",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"verify_user_otp.php"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sun, 10 Jan 2021 18:34:45 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.46 (Win64) OpenSSL/1.1.1h PHP/7.4.12"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.12"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Length",
+							"value": "48"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "{\"status\":404,\"message\":\"Invalid OTP\",\"body\":\"\"}"
+				},
+				{
+					"name": "Success Case",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "9989895369",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://organichicken.in/admin-panel/APIs/verify_user_otp.php",
+							"protocol": "http",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"verify_user_otp.php"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.14"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "123"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "br"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 13 Apr 2021 18:50:32 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "LiteSpeed"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"valid OTP\",\n    \"body\": {\n        \"nkey\": \"8e86055edfccd0f671d8358cf818181d\",\n        \"user_id\": \"3\",\n        \"is_new_user\": \"1\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Home Data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/home_data.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"home_data.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Home Data Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "{{VJ user id}}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "89192b903620e67ed0259db749dfb58f",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/home_data.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"home_data.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order Rating",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "{{VJ user id}}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "order_id",
+							"value": "#OCORD_p3B1G",
+							"type": "text"
+						},
+						{
+							"key": "rating",
+							"value": "4",
+							"type": "text"
+						},
+						{
+							"key": "review",
+							"value": "Chicken was very fresh",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/order_rating.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"order_rating.php"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success Case",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "hash_key",
+									"value": "06d16ee9ea9a7ec976f7c5aac3dfe2ee",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "order_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "rating",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "review",
+									"value": "Chicken was very fresh",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://organichicken.in/admin-panel/APIs/order_rating.php",
+							"protocol": "http",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"order_rating.php"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 11 Jan 2021 15:51:28 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.46 (Win64) OpenSSL/1.1.1h PHP/7.4.12"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.12"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Length",
+							"value": "68"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "{\"status\":200,\"message\":\"successfully order review added\",\"body\":[]}"
+				}
+			]
+		},
+		{
+			"name": "Add to cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "b0752f41d96f932585bc135307cc34bc",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						},
+						{
+							"key": "item_id",
+							"value": "#OCITM_7u1YN",
+							"type": "text"
+						},
+						{
+							"key": "quantity",
+							"value": "5",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/add_to_cart.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"add_to_cart.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save user card",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "a1fbbeb9f986261cad30ae220917c056",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "card_name",
+							"value": "Vijay Kumar",
+							"type": "text"
+						},
+						{
+							"key": "card_number",
+							"value": "1234-2334-4545-4324",
+							"type": "text"
+						},
+						{
+							"key": "expiry_date",
+							"value": "01/24",
+							"type": "text"
+						},
+						{
+							"key": "cvv",
+							"value": "897",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/save_user_card.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"save_user_card.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "182e41a945f03a92b860f9828f091e3d",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						},
+						{
+							"key": "address_id",
+							"value": "#OCADD_FGTgK",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/delete_user_address.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"delete_user_address.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "mode",
+							"value": "cod",
+							"type": "text"
+						},
+						{
+							"key": "address_id",
+							"value": "#OCADD_UluZ2",
+							"type": "text"
+						},
+						{
+							"key": "delivery_slot",
+							"value": "3PM - 5PM",
+							"type": "text"
+						},
+						{
+							"key": "delivery_date",
+							"value": "2021-07-23",
+							"type": "text"
+						},
+						{
+							"key": "offer_id",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "use_wallet",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/save_order.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"save_order.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add member ship",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "plan_id",
+							"value": "#OCPLN_Ea2GB",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/add_member_ship.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"add_member_ship.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add money to wallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "100",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/add_to_wallet.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"add_to_wallet.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Member ship Payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_order_id",
+							"value": "order_HP31pLF3VDvE0u",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_signature",
+							"value": "asdm64865a45sd",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_payment_id",
+							"value": "asd879198ad5",
+							"type": "text"
+						},
+						{
+							"key": "status",
+							"value": "success",
+							"type": "text"
+						},
+						{
+							"key": "mode",
+							"value": "upi",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/member_ship_payment.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"member_ship_payment.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wallet Payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_order_id",
+							"value": "order_HJNzqX1ssJ9R13",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_signature",
+							"value": "asdm64865a45sd",
+							"type": "text"
+						},
+						{
+							"key": "razorpay_payment_id",
+							"value": "asd879198ad5",
+							"type": "text"
+						},
+						{
+							"key": "status",
+							"value": "success",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/wallet_payment.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"wallet_payment.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "order_id",
+							"value": "#",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/cancel_order.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"cancel_order.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save user address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "b639e5fcb9756cea490531f939adff47",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						},
+						{
+							"key": "house_no",
+							"value": "Dr.No 55-6-57",
+							"type": "text"
+						},
+						{
+							"key": "building_name",
+							"value": "Vyshu Enclave",
+							"type": "text"
+						},
+						{
+							"key": "street_name",
+							"value": "Uppu street",
+							"type": "text"
+						},
+						{
+							"key": "landmark",
+							"value": "Near kalam statue",
+							"type": "text"
+						},
+						{
+							"key": "pincode",
+							"value": "500001",
+							"type": "text"
+						},
+						{
+							"key": "locality",
+							"value": "Jampeta",
+							"type": "text"
+						},
+						{
+							"key": "city",
+							"value": "Rajahmundry",
+							"type": "text"
+						},
+						{
+							"key": "address_type",
+							"value": "Home",
+							"type": "text"
+						},
+						{
+							"key": "is_default_address",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Surya",
+							"type": "text"
+						},
+						{
+							"key": "mobile",
+							"value": "8008120364",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "alt_mobile",
+							"value": "9491699190",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/save_user_address.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"save_user_address.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save user token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "a1fbbeb9f986261cad30ae220917c056",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "c3HJvRMt7Jo:APA91bHLFgiw_DwjK0j9bdOqsyeVDkFGhOInQ59fJQEpFEJeq3WYUzEKTDQ34xTvpzduHnybLlmxgWQcTDDvZ9Hx9CxYGHmixocqkzJYvxqepDvGYMRQcl-cHa8dnPwCdYTO-R7frwB7",
+							"type": "text"
+						},
+						{
+							"key": "device",
+							"value": "android",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/save_user_token.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"save_user_token.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user saved cards",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "a1fbbeb9f986261cad30ae220917c056",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_user_saved_cards.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_user_saved_cards.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "06d92c80b0a889737e9745b88db7c7f8",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_user_address.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_user_address.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set user default address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "06d92c80b0a889737e9745b88db7c7f8",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						},
+						{
+							"key": "address_id",
+							"value": "#OCADD_mrwtp",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/set_user_default_address.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"set_user_default_address.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "89192b903620e67ed0259db749dfb58f",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_TaB8r",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_user_info.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_user_info.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check delivery location",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pincode",
+							"value": "520001",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/check_location.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"check_location.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save user info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_JtIKX",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "name",
+							"value": "VJ Kumar",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "vjkumar@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "profile_pic",
+							"type": "file",
+							"src": "/E:/Clean My pics/VJ/siz.png",
+							"disabled": true
+						},
+						{
+							"key": "is_pic_changed",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/save_user_info.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"save_user_info.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get cart details",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "use_wallet",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "offer_id",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_cart_items.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_cart_items.php"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Valid cart data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "8886810715",
+									"type": "text"
+								},
+								{
+									"key": "hash_key",
+									"value": "d2095b7c190554bbdcde6d7bc5718c7b",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "#OCUSR_JtIKX",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://organichicken.in/admin-panel/APIs/get_cart_items.php",
+							"protocol": "https",
+							"host": [
+								"organichicken",
+								"in"
+							],
+							"path": [
+								"admin-panel",
+								"APIs",
+								"get_cart_items.php"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.14"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "334"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "br"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 22 Apr 2021 14:49:20 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "LiteSpeed"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"cart details\",\n    \"body\": {\n        \"items\": [\n            {\n                \"cart_id\": \"#OCCRT_yEUDp\",\n                \"item_id\": \"#OCITM_gddQ4\",\n                \"quantity\": \"2\",\n                \"price_per_unit\": \"150\",\n                \"discount_price\": \"145\",\n                \"net_weight\": \"500\",\n                \"item_name\": \"Chilly Chicken\",\n                \"item_image\": \"chilly_chicken_1619010072.jpg\",\n                \"item_final_price\": \"290\"\n            },\n            {\n                \"cart_id\": \"#OCCRT_mP30H\",\n                \"item_id\": \"#OCITM_7u1YN\",\n                \"quantity\": \"1\",\n                \"price_per_unit\": \"200\",\n                \"discount_price\": \"185\",\n                \"net_weight\": \"600\",\n                \"item_name\": \"Chicken 007\",\n                \"item_image\": \"chicken_007_1619102931.jpg\",\n                \"item_final_price\": \"185\"\n            }\n        ],\n        \"actual_cart_total\": \"475\",\n        \"discount_cart_total\": \"25\",\n        \"delivery_charges\": \"25\",\n        \"final_cart_total\": \"500\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get offer details",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_offers.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_offers.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user orders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "d2095b7c190554bbdcde6d7bc5718c7b",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "#OCUSR_JtIKX",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_user_orders.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_user_orders.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user orders Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8179878838",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "5fe5e7b7d0348815f3084b519a70b37e",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_user_orders.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_user_orders.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get categories",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "a1fbbeb9f986261cad30ae220917c056",
+							"type": "text"
+						},
+						{
+							"key": "category_id",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_categories.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_categories.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get items",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8886810715",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "hash_key",
+							"value": "a1fbbeb9f986261cad30ae220917c056",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "category_id",
+							"value": "#OCCAT_elIwR",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "item_id",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_items.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_items.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Recipes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "8008120364",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "b0752f41d96f932585bc135307cc34bc",
+							"type": "text"
+						},
+						{
+							"key": "recipe_id",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_recipes.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_recipes.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get wallet data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "{{VJ Phone}}",
+							"type": "text"
+						},
+						{
+							"key": "hash_key",
+							"value": "{{VJ Hash key}}",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "https://organichicken.in/admin-panel/APIs/get_wallet_transactions.php",
+					"protocol": "https",
+					"host": [
+						"organichicken",
+						"in"
+					],
+					"path": [
+						"admin-panel",
+						"APIs",
+						"get_wallet_transactions.php"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

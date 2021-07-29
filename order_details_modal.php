@@ -111,16 +111,7 @@ $(document).ready(function (){
 	$('#edit_item').select2();
 	setTimeout(() => {
 		$('#edit_category').trigger('change');
-	}, 100);	
-	var edit_order_image = new KTImageInput('edit_order_image_div');
-
-	edit_order_image.on('change', function(imageInput) {
-		$("#is_image_changed").val(1);
-		swal.fire({
-			title: 'Image successfully changed !',
-			type: 'success',timer: 2000,buttonsStyling: true
-		});
-	});
+	}, 100);
 
 	$('#edit_order_btn').click(() => {
 		KTApp.block("#edit_order_form", { overlayColor: "#000000", state: "danger", message: "Updating..."})

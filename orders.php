@@ -233,9 +233,9 @@ $delivery_users = get_delivery_users_data();
                 {"className": "dt-center", "targets": [3]},
                 {
                     "render": function ( data, type, row ) {
-                        if(+row['status'] === 0){
+                        if(+row['status'] == '<?php echo ORD_NEW_ORDER; ?>'){
                             return  `<button type="button" data-toggle="tooltip" title="Accept Order" class="btn btn-light-primary btn-sm approve_order" value="${row['order_key']}"><i class="fas fa-check"></i></button><button data-toggle="tooltip" data-theme="dark" title="Assign Delivery" type="button" class="btn btn-light-info btn-sm ml-2 assign_delivery_btn" value="${row['order_key']}"><i class="fas fa-truck"></i></button><button data-toggle="tooltip" data-theme="dark" title="Cancel Order" type="button" class="btn btn-light-danger btn-sm ml-2 cancel_order" value="${row['order_key']}"><i class="fas fa-times"></i></button>`;
-                        }else if(row['status'] == '<?php echo ORD_NEW_ORDER; ?>'){
+                        }else if(row['status'] == '<?php echo ORD_CANCELED; ?>'){
                             return  `<span class="label label-lg label-light-danger label-inline">Canceled</span>`;
                         }else if(row['status'] == '<?php echo ORD_ACCEPTED; ?>'){
                             return  `<button data-toggle="tooltip" data-theme="dark" title="Assign Delivery" type="button" class="btn btn-light-info btn-sm ml-2 assign_delivery_btn" value="${row['order_key']}"><i class="fas fa-truck"></i></button>`;
@@ -273,38 +273,6 @@ $delivery_users = get_delivery_users_data();
             order_details(index);		
         });
 
-        $('#add_order_btn').click(() => {
-            $('#add_order_btn').attr('disabled','disabled');
-            KTApp.block("#add_new_order_form", { overlayColor: "#000000", state: "danger", message: "Saving..."});
-            $('#add_new_order_form').ajaxSubmit({
-                url:"ajax_calls.php",dataType:"json",type:"POST",
-                data:{"action" : "add_new_order"},
-                success:function (resp){
-                    if(resp.status === 'success'){
-                        toastr["success"]("", "New order added successfully");
-                        reload_orders();
-                    }else{
-                        toastr["error"](" ", "order adding failed")
-                    }
-                    setTimeout(() => {
-                        $("#add_order").modal("hide");
-                    }, 2000)
-                },error: function(xhr, status, error) {
-                    toastr["error"](" ", "Oops! Something went wrong");
-                    setTimeout(() => {
-                        $("#add_order").modal("hide");
-                    }, 2000)
-                }                
-            });
-        });
-
-        $('#add_order').on('hidden.bs.modal', function (e) {
-            KTApp.unblock("#add_new_order_form");
-            $('#add_new_order_form')[0].reset();
-            $('#remove_cat_image').trigger('click');
-            $('#add_order_btn').removeAttr('disabled');
-        });
-
         $(document).on('click',".cancel_order",function(e) {
             if(!$(this).val()) return false;
 
@@ -317,13 +285,13 @@ $delivery_users = get_delivery_users_data();
         });
         $(document).off('click','.assign_delivery_btn').on('click',".assign_delivery_btn",function(e) {
             if(!$(this).val()) return false;
-
+        
             $('#assign_order_id').val($(this).val());
             $('#assgin_delivery_btn').removeAttr('disabled');
             $('#assign_delivery_modal').modal('show');
         });
         $(document).off('click','#assgin_delivery_btn').on('click',"#assgin_delivery_btn",function(e) {
-            assign_to_delivery(0);
+            if($('#delivery_users').val()) assign_to_delivery(0);
         });
     })
 </script>

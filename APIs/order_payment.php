@@ -40,10 +40,12 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         db_query("DELETE FROM `cart` WHERE `user_id` = '".$user_id."'");
         $resp['message'] = "successfully saved";
         $resp['body'] = array();
+        $user_name = sqlValue("SELECT `first_name` FROM `users` WHERE `user_id` =  '".$user_id."'");
+        $message = "Hi ".$user_name.", ";
         $tokens = get_user_device_tokens($user_id,"user_id");
-        $message = "Order placed successfully.";
+        $message .= "Your order has been placed successfully";
         if(!empty($tokens['android'])){
-            $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
+            $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order","order_type"=>ORD_NEW_ORDER,"order_id"=>$order_key));
             send_android_push_notification($tokens['android'], $message, $data);
         }
         if(!empty($tokens['ios'])){

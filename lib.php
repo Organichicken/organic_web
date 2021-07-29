@@ -457,24 +457,28 @@ function order_handling($order_id,$order_type)
 	if(empty($order_type) || empty($order_id)) return false;
 
 	if(db_query("UPDATE `orders` SET `status`='".$order_type."',`last_updated_time`='".get_current_time()."' WHERE `order_key` = '".$order_id."' ")){
-		$user_id = sqlValue("SELECT `user_id` FROM `orders` WHERE `order_key` = '".$order_id."'");
-		$tokens = get_user_device_tokens($user_id,"user_id");
+		$user_data = sqlr("SELECT `user_id`,`delivery_user` FROM `orders` WHERE `order_key` = '".$order_id."' LIMIT 1");
+		$user_name = sqlValue("SELECT `first_name` FROM `users` WHERE `user_id` =  '".$user_data['user_id']."'");
+		$tokens = get_user_device_tokens($user_data['user_id'],"user_id");
 
+		$message = "Hi ".$user_name.", ";
 		if($order_type == ORD_USER_CANCELED)
-        	$message = "Your order cancelled successfully.";
+        	$message .= "Your order cancelled successfully.";
 		else if($order_type == ORD_ACCEPTED)
-        	$message = "Your order is accepted.";
+        	$message .= "Your order is accepted.";
 		else if($order_type == ORD_CANCELED)
-        	$message = "Sorry! Your order is cancelled.";
+        	$message .= "Sorry! Your order is cancelled.";
 		else if($order_type == ORD_DELIVERED)
-        	$message = "Your order has been successfully delivered.";
+        	$message .= "Your order has been delivered successfully. Please give rating and comments, might be helpful us to improve Organic Chicken service. Thank you.";
 		else if($order_type == ORD_OUT_FOR_DELIVERY)
-        	$message = "Your order is out for delivery.";
-		else if($order_type == ORD_ASSIGN_TO_DELIVERY)
-        	$message = "Your order has been assgined.";
+        	$message .= "Your order is out for delivery.";
+		else if($order_type == ORD_ASSIGN_TO_DELIVERY){
+			$del_user_name = sqlValue("SELECT `first_name` FROM `delivery_users` WHERE `delivery_user_id` =  '".$user_data['delivery_user']."'");
+        	$message .= "Your order has been assgined to ".$del_user_name;
+		}
 
 		if(!empty($tokens['android'])){
-			$data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
+			$data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order","order_type"=>$order_type,"order_id"=>$order_id));
 			send_android_push_notification($tokens['android'], $message, $data);
 		}
 		if(!empty($tokens['ios'])){
@@ -482,8 +486,7 @@ function order_handling($order_id,$order_type)
 			// $result1 = send_apple_push_notifications($tokens['ios'],$json_string_payload);
 		}
 		return true;
-	}
-	
+	}	
 	return false;
 }
 //Get orders count(08-03-2021)
@@ -831,7 +834,7 @@ function assign_delivery_user($order_id,$delivery_users_id,$assign = ''){
 			return array('status' => 'conflict','assgn_del' => $assgn_del,'out_del' => $out_del);
 		}
 	}
-	if(order_handling($order_id,ORD_ASSIGN_TO_DELIVERY) && db_query("UPDATE `orders` SET `delivery_user`= '".$delivery_users_id."',`last_updated_time` = '".get_current_time()."' WHERE `order_key` = '".$order_id."'")){
+	if(db_query("UPDATE `orders` SET `delivery_user`= '".$delivery_users_id."',`last_updated_time` = '".get_current_time()."' WHERE `order_key` = '".$order_id."'") && order_handling($order_id,ORD_ASSIGN_TO_DELIVERY)){
 		$tokens = get_user_device_tokens($delivery_users_id,"delivery_user_id");
         $message = "New order is assign to you. Check it once.";
         if(!empty($tokens['android'])){

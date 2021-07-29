@@ -16,11 +16,11 @@ if(empty($user_phone) || empty($user_hash_key)){
 
 $resp = array();
 
-if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){   
+if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
     $resp['status'] = 200;
     $resp['body'] = array();
 
-    if($_POST['is_pic_changed'] == 1){
+    if($_REQUEST['is_pic_changed'] == 1){
         $target_dir = "../uploads/user_profile_pics/";
 
         $img_name = explode(".", $_FILES["profile_pic"]["name"]);

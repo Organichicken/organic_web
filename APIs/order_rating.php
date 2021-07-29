@@ -18,6 +18,7 @@ if(empty($user_phone) || empty($user_hash_key)){
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
     $resp['status'] = 200;
+    db_query("DELETE FROM `order_ratings` WHERE `order_id` = '".db_escape($_POST['order_id'])."'");
     if(db_query("INSERT INTO `order_ratings`(`user_id`, `order_id`, `rating`, `review`, `created_at`) VALUES ('".$user_id."','".db_escape($_POST['order_id'])."','".db_escape($_POST['rating'])."','".db_escape($_POST['review'])."','".date('Y-m-d H:i:s')."')")){
         $resp['message'] = "successfully order review added";
         $resp['body'] = array();

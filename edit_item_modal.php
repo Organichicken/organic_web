@@ -62,16 +62,25 @@ $categories = get_categories_data('');
 				</div>
 			</div>
 		</div>
-		<div class="col-md-3 col-lg-3 col-sm-12">
+		<!-- <div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Gross Weight</label>
 				<input class="form-control" type="number" id="gross_weight" name="gross_weight" placeholder="Gross Weight" value="<?php echo $item_data['gross_weight']; ?>" min="0">
 			</div>
-		</div>
+		</div> -->
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Net Weight</label>
 				<input class="form-control" type="number" id="net_weight" name="net_weight" placeholder="Net Weight" value="<?php echo $item_data['net_weight']; ?>" min="0">
+			</div>
+		</div>
+		<div class="col-md-3 col-lg-3 col-sm-12">
+			<div class="form-group">
+				<label for="weight_type">Weight Type</label>
+				<select class="form-control" id="weight_type" name="weight_type">
+					<option value="grams" <?php if($item_data['weight_type'] == 'grams') echo "selected"; ?>>Grams</option>
+					<option value="kgs" <?php if($item_data['weight_type'] == 'kgs') echo "selected"; ?>>Kgs</option>
+				</select>
 			</div>
 		</div>
 		<div class="col-md-3 col-lg-3 col-sm-12">
@@ -128,6 +137,89 @@ $categories = get_categories_data('');
 <script>
 $(document).ready(function (){
 	const categories = <?php echo json_encode($categories); ?>;
+
+	var edit_item_validation = FormValidation.formValidation(
+		KTUtil.getById('edit_item_form'),
+		{
+			fields: {
+				item_name: {
+					validators: {
+						notEmpty: { message: "Item name can't be empty" }
+					}
+				},
+				category: {
+					validators: {
+						notEmpty: { message: 'Select category' }
+					}
+				},
+				item_description: {
+					validators: {
+						notEmpty: { message: 'Item description cant be empty' }
+					}
+				},
+				net_weight: {
+					validators: {
+						greaterThan: {
+							message: 'Net weight should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "Net weight can't be empty" }
+					}
+				},
+				price_per_unit: {
+					validators: {
+						greaterThan: {
+							message: 'Price per unit should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "Price per unit can't be empty" }
+					}
+				},
+				discount_price: {
+					validators: {
+						greaterThan: {
+							message: 'Discount price should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "Discount price can't be empty" }
+					}
+				},
+				no_of_pieces: {
+					validators: {
+						greaterThan: {
+							message: 'No of pieces should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "No of pieces can't be empty" }
+					}
+				},
+				serves: {
+					validators: {
+						greaterThan: {
+							message: 'Serves should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "Serves can't be empty" }
+					}
+				},
+				available_quantity: {
+					validators: {
+						greaterThan: {
+							message: 'Available quantity should be greater that 1',
+							min: 1,
+						},
+						notEmpty: { message: "Available quantity can't be empty" }
+					}
+				}
+			},
+			plugins: {
+				trigger: new FormValidation.plugins.Trigger(),
+				submitButton: new FormValidation.plugins.SubmitButton(),
+				bootstrap: new FormValidation.plugins.Bootstrap()
+			}
+		}
+	);
+
 	$('[data-toggle="tooltip"]').tooltip()
 	$('#edit_category').select2();
 	setTimeout(() => {
@@ -155,25 +247,41 @@ $(document).ready(function (){
 	});
 
 	$('#edit_item_btn').click(() => {
-		KTApp.block("#edit_item_form", { overlayColor: "#000000", state: "danger", message: "Updating..."})
-		$('#edit_item_form').ajaxSubmit({
-			url:"ajax_calls.php",dataType:"json",type:"POST",
-			data:{"action" : "edit_item"},
-			success:function (resp){
-				if(resp.status === 'success'){
-					toastr["success"]("", "Item updated successfully");
-					items_table.ajax.reload();
-				}else{
-					toastr["error"]("", "Item updation failed");
-				}
-				setTimeout(() => {
-					$("#edit_item_modal").modal("hide");
-				}, 2000);
-			},error: function(xhr, status, error) {
-				$('#edit_item_modal').modal('hide');
-				toastr["error"](" ", "Oops! Something went wrong")
+		edit_item_validation.validate().then(function(status) {
+			if (status == 'Valid') {
+				KTApp.block("#edit_item_form", { overlayColor: "#000000", state: "danger", message: "Updating..."})
+				$('#edit_item_form').ajaxSubmit({
+					url:"ajax_calls.php",dataType:"json",type:"POST",
+					data:{"action" : "edit_item"},
+					success:function (resp){
+						if(resp.status === 'success'){
+							toastr["success"]("", "Item updated successfully");
+							items_table.ajax.reload();
+						}else{
+							toastr["error"]("", "Item updation failed");
+						}
+						setTimeout(() => {
+							$("#edit_item_modal").modal("hide");
+						}, 2000);
+					},error: function(xhr, status, error) {
+						$('#edit_item_modal').modal('hide');
+						toastr["error"](" ", "Oops! Something went wrong")
+					}
+				});
+			}else {
+				swal.fire({
+					text: "Sorry, looks like there are some errors detected, please try again.",
+					icon: "error",
+					buttonsStyling: false,
+					confirmButtonText: "Ok, got it!",
+					customClass: {
+						confirmButton: "btn font-weight-bold btn-light-primary"
+					}
+				}).then(function() {
+					KTUtil.scrollTop();
+				});
 			}
 		});
 	});
-})
+});
 </script>

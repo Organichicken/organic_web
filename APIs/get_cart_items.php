@@ -17,9 +17,15 @@ if(empty($user_phone) || empty($user_hash_key)){
 }
 
 if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'") && $user_id = sqlValue("SELECT `user_id` FROM `users` WHERE `phone` = '".$user_phone."'")){
+    $user_info = sqlr("SELECT `first_name`, `is_member`, `membership_ends` FROM `users` WHERE user_id = '".$user_id."' LIMIT 1");
+    
     $resp['status'] = 200;
     $resp['message'] = "cart details";
     $cart_data = array();
+    
+    //Set premium member variable (VJ 19-07-2021)
+    $premium_discount_price = $is_premium_member = 0;
+    if($user_info['is_member'] == '1' && strtotime($user_info['membership_ends']) > strtotime(date('Y-m-d H:i:s'))) $is_premium_member = 1;
     $actual_cart_total = $discount_cart_total = $final_cart_total = 0;
 
     //Get and store global meta data here
@@ -45,7 +51,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $cart_data['items'][] = $item;
     }
     //Not adding delivery charge is cart value is more that min cart value (VJ 25-05-21)
-    if($final_cart_total >= $min_cart_val){
+    if($is_premium_member ||$final_cart_total >= $min_cart_val){
         $delivery_charges = 0;
     }else{
         $final_cart_total += $delivery_charges;
@@ -55,9 +61,9 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $cart_offer['msg'] = '';
     $cart_offer['status'] = $cart_offer['offer_price'] = $cart_offer['cashback'] = '0';
     if($user_cart_data){
+        //Offer calculation
         if(!empty($_POST['offer_id'])){
             $offer = get_offers_data($_POST['offer_id'])[0];
-            // echo json_encode($offer);
             if($offer['status'] == "1"){
                 if(strtotime($offer['offer_end']) >= strtotime(date('Y-m-d H:i:s'))){
                     if($final_cart_total >= $offer['min_order_price']){
@@ -96,6 +102,12 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
             }    
         }
         $cart_data['used_wallet'] = 0;
+        //Premium calculation
+        if($is_premium_member){
+            $premium_discount_price = round(($final_cart_total * 5 / 100));
+            $final_cart_total -= $premium_discount_price;
+        }
+        //Wallet calculation
         if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')){
             if($user_wallet > $final_cart_total){
                 $cart_data['used_wallet'] = $final_cart_total;
@@ -117,6 +129,8 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $cart_data['wallet_amount'] = (string)($user_wallet - $cart_data['used_wallet']);
     $cart_data['min_cart_value'] = (string)$min_cart_val;
     $cart_data['offer_details'] = $cart_offer;
+    $cart_data['taxes_charges'] = "0";
+    $cart_data['premium_discount_price'] = (string)$premium_discount_price;
     $resp['body'] = $cart_data;
 }else{
     $resp['status'] = 404;

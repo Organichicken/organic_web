@@ -26,6 +26,7 @@ $categories = get_categories_data('');
                                         <th>Price Per Unit</th>
                                         <th>Discount Price</th>
                                         <th>No.of Pieces</th>
+                                        <th>Available Quantity</th>
                                         <th>Serves</th>
 										<th>In Stock</th>
                                     </tr>
@@ -242,6 +243,89 @@ $categories = get_categories_data('');
         }
         $(document).ready(function (){
             $('#category').select2();
+
+            var item_validation = FormValidation.formValidation(
+                KTUtil.getById('add_new_item_form'),
+                {
+                    fields: {
+                        item_name: {
+                            validators: {
+                                notEmpty: { message: "Item name can't be empty" }
+                            }
+                        },
+                        category: {
+                            validators: {
+                                notEmpty: { message: 'Select category' }
+                            }
+                        },
+                        item_description: {
+                            validators: {
+                                notEmpty: { message: 'Item description cant be empty' }
+                            }
+                        },
+                        net_weight: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'Net weight should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "Net weight can't be empty" }
+                            }
+                        },
+                        price_per_unit: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'Price per unit should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "Price per unit can't be empty" }
+                            }
+                        },
+                        discount_price: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'Discount price should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "Discount price can't be empty" }
+                            }
+                        },
+                        no_of_pieces: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'No of pieces should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "No of pieces can't be empty" }
+                            }
+                        },
+                        serves: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'Serves should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "Serves can't be empty" }
+                            }
+                        },
+                        available_quantity: {
+                            validators: {
+                                greaterThan: {
+                                    message: 'Available quantity should be greater that 1',
+                                    min: 1,
+                                },
+                                notEmpty: { message: "Available quantity can't be empty" }
+                            }
+                        }
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        submitButton: new FormValidation.plugins.SubmitButton(),
+                        bootstrap: new FormValidation.plugins.Bootstrap()
+                    }
+                }
+            );
+
             const categories = <?php echo json_encode($categories); ?>;
             $("#category").on("change", function () {
                 $('#category_quantity').val('0');
@@ -263,7 +347,7 @@ $categories = get_categories_data('');
                 });
             });
 
-			var item_cols = [{"data":"item_id"},{"data":"item_name"},{"data":"category_name"},{"data":"available_quantity"},{"data":"price_per_unit"},{"data":"discount_price"},{"data":"no_of_pieces"},{"data":"serves"},{"data":"in_stock"}];
+			var item_cols = [{"data":"item_id"},{"data":"item_name"},{"data":"category_name"},{"data":"available_quantity"},{"data":"price_per_unit"},{"data":"discount_price"},{"data":"no_of_pieces"},{"data":"available_quantity"},{"data":"serves"},{"data":"in_stock"}];
 			
             items_table = $('#items_table').DataTable({
                 ScrollX:		true,
@@ -302,30 +386,47 @@ $categories = get_categories_data('');
             });
             
             $('#add_new_item_btn').click(() => {
-                $('#add_new_item_btn').attr('disabled','disabled');
-                KTApp.block("#add_new_item_form", { overlayColor: "#000000", state: "danger", message: "Please wait..."})
-                $('#add_new_item_form').ajaxSubmit({
-                    url:"ajax_calls.php",dataType:"json",type:"POST",
-                    data:{"action" : "add_new_item"},
-                    success:function (resp){
-                        if(resp.status === 'success'){
-                            toastr["success"]("", "New item added successfully");
-                            items_table.ajax.reload();
-                        }else{
-                            toastr["error"](" ", "Item adding failed")
-                        }
-                        setTimeout(() => {
-					        $("#add_item_modal").modal("hide");
-			        	}, 2000);
-                    },error: function(xhr, status, error) {
-                        $('#add_item_modal').modal('hide');
-                        toastr["error"](" ", "Oops! Something went wrong")
+                item_validation.validate().then(function(status) {
+                    if (status == 'Valid') {
+                        $('#add_new_item_btn').attr('disabled','disabled');
+                        KTApp.block("#add_new_item_form", { overlayColor: "#000000", state: "danger", message: "Please wait..."})
+                        $('#add_new_item_form').ajaxSubmit({
+                            url:"ajax_calls.php",dataType:"json",type:"POST",
+                            data:{"action" : "add_new_item"},
+                            success:function (resp){
+                                if(resp.status === 'success'){
+                                    toastr["success"]("", "New item added successfully");
+                                    items_table.ajax.reload();
+                                }else{
+                                    toastr["error"](" ", "Item adding failed")
+                                }
+                                setTimeout(() => {
+                                    $("#add_item_modal").modal("hide");
+                                }, 2000);
+                            },error: function(xhr, status, error) {
+                                $('#add_item_modal').modal('hide');
+                                toastr["error"](" ", "Oops! Something went wrong")
+                            }
+                        });
+                    } else {
+                        swal.fire({
+                            text: "Sorry, looks like there are some errors detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn font-weight-bold btn-light-primary"
+                            }
+                        }).then(function() {
+                            KTUtil.scrollTop();
+                        });
                     }
                 });
             });
 
             $('#add_item_modal').on('hidden.bs.modal', function (e) {
                 KTApp.unblock("#add_new_item_form");
+                item_validation.resetForm();
                 $('#category').val(null).trigger('change');
                 $('#add_new_item_form')[0].reset();
                 $('#remove_item_image').trigger('click');

@@ -26,6 +26,11 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $offer_id = isset($_POST['offer_id']) ? db_escape($_POST['offer_id']) : '';
     db_begin_transaction();   
     
+    $user_info = sqlr("SELECT `first_name`, `is_member`, `membership_ends` FROM `users` WHERE user_id = '".$user_id."' LIMIT 1");
+    //Set premium member variable (VJ 19-07-2021)
+    $premium_discount_price = $is_premium_member = $final_order_price = 0;
+    if($user_info['is_member'] == '1' && strtotime($user_info['membership_ends']) > strtotime(date('Y-m-d H:i:s'))) $is_premium_member = 1;
+
     $order_key = generate_unique_id('order',5);    
 
     $actual_order_total = $discount_order_total = $final_order_total = 0;
@@ -51,7 +56,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $final_order_total += $delivery_charges;
     }
 
-    $order_offer = array();
+    $order_offer = $order_data = array();
     $order_offer['status'] = $order_offer['offer_price'] = '0';
 
     $now = date('Y-m-d H:i:s');
@@ -102,6 +107,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     }
 
     $used_wallet = 0;
+    $final_order_price = $final_order_total;
     if(!empty($_POST['use_wallet'] && $_POST['use_wallet'] == '1')){
         if($user_wallet > $final_order_total){
             $used_wallet = $final_order_total;
@@ -124,7 +130,6 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $time_slots = explode('-',$_POST['delivery_slot']);
         $buffer_time = date('Y-m-d H:i:s',strtotime('+2 hour',time()));
         $delivery_start = date('Y-m-d H:i:s',strtotime(date('Y-m-d').trim($time_slots[0])));
-        // echo $buffer_time."<br>".$delivery_start;
         if($buffer_time > $delivery_start){
             $resp['status'] = 404;
             $resp['message'] = "please select valid delivery slot";
@@ -132,24 +137,21 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
             exit;
         }        
     }
-    // exit;
-    $order_address = sqlr("SELECT `name`, `phone`, `alternative_phone`, `house_no`, `building_name`, `street`, `landmark`, `pincode`, `locality`, `city`, `address_type` FROM `address` WHERE address_id = '".makesafe($_POST['address_id'])."'");
+    $order_address = sqlr("SELECT `name`, `phone`, `alternative_phone`, `house_no`, `building_name`, `street`, `landmark`, `pincode`, `locality`, `city`, `address_type`, `latitude`, `longitude` FROM `address` WHERE address_id = '".makesafe($_POST['address_id'])."'");
     $order_data['address'] = $order_address ? $order_address : array();
+    $order_data['offer_price'] = !empty($order_offer['offer_price']) ? $order_offer['offer_price'] : 0;
+    $order_data['cashback'] = !empty($order_offer['cashback']) ? $order_offer['cashback'] : 0;
+    $order_data['user_wallet'] = $used_wallet;
 
     if(strtolower($_POST['mode']) == 'cod'){
-		// echo "INSERT INTO `payments`(`user_id`, `order_id`, `amount`, `mode`, `status`, `timestamp` ) VALUES ('".makesafe($user_id)."','".makesafe($order_key)."','".makesafe($final_order_total)."','offline','','".$now."')";
         $trans_qry = db_query("INSERT INTO `payments`(`user_id`, `order_id`, `amount`, `mode`, `status`, `timestamp` ) VALUES ('".makesafe($user_id)."','".makesafe($order_key)."','".makesafe($final_order_total)."','offline','','".$now."')");
         
         if(!empty($order_offer['cashback'])){
             db_query("INSERT INTO `user_wallet`(`user_id`, `amount`, `description`, `status`, `updated_at`) VALUES ('".db_escape($user_id)."','+".db_escape($order_offer['cashback'])."','Cash back received from order ".$order_key."','success','".$now."')");
         }
         if(!empty($_POST['use_wallet']) && $_POST['use_wallet'] == '1'){
-            // echo "INSERT INTO `user_wallet`(`user_id`, `amount`,  `description`, `status`, `updated_at`) VALUES ('".db_escape($user_id)."','-".$used_wallet."','Used wallet amount on order ".$order_key."','success','".$now."')";
-            // exit;
             db_query("INSERT INTO `user_wallet`(`user_id`, `amount`,  `description`, `status`, `updated_at`) VALUES ('".db_escape($user_id)."','-".$used_wallet."','Used wallet amount on order ".$order_key."','success','".$now."')");
         }
-        $order_data['user_wallet'] = $used_wallet;
-        $order_data['cashback'] = !empty($order_offer['cashback']) ? $order_offer['cashback'] : 0;
     }else if(strtolower($_POST['mode']) == 'online'){
         $api = new Api($keyId, $keySecret);
 
@@ -165,8 +167,6 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
             $resp['message'] = "successfully order placed";
             $resp['body'] = array('order_key' => $order_key,'razorpay_order_id' => $razorpayOrder['id']);
             $order_data['razorpay_order_id'] = $razorpayOrder['id'];
-            $order_data['user_wallet'] = $used_wallet;
-            $order_data['cashback'] = $order_offer['cashback'] ? $order_offer['cashback'] : 0;
         }else{
             $resp['status'] = 500;
             $resp['message'] = "razorpay order creation failed";
@@ -180,8 +180,10 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         exit;
     }
 	// exit;
-    $res = db_query("INSERT INTO `orders`(`order_key`, `user_id`, `address_id`, `offer_id`, `order_price`, `order_data`, `delivery_date`, `delivery_slot`, `delivery_charge`, `discount_price`, `final_order_price`, `status`, `order_at`, `last_updated_time`) VALUES ('".db_escape($order_key)."','".db_escape($user_id)."','".db_escape($_POST['address_id'])."','".$offer_id."','".db_escape($actual_order_total)."','".json_encode($order_data)."','".$delivery_date."','".db_escape($_POST['delivery_slot'])."','".db_escape($delivery_charges)."','".db_escape($discount_order_total)."','".db_escape($final_order_total)."','0','".$now."','".$now."')");
+    $res = db_query("INSERT INTO `orders`(`order_key`, `user_id`, `address_id`, `offer_id`, `order_price`, `order_data`, `delivery_date`, `delivery_slot`, `delivery_charge`, `discount_price`, `final_order_price`, `status`, `order_at`, `last_updated_time`) VALUES ('".db_escape($order_key)."','".db_escape($user_id)."','".db_escape($_POST['address_id'])."','".$offer_id."','".db_escape($actual_order_total)."','".json_encode($order_data)."','".$delivery_date."','".db_escape($_POST['delivery_slot'])."','".db_escape($delivery_charges)."','".db_escape($discount_order_total)."','".db_escape($final_order_price)."','0','".$now."','".$now."')");
 
+    $user_name = sqlValue("SELECT `first_name` FROM `users` WHERE `user_id` =  '".$user_id."'");
+    $message = "Hi ".$user_name.", ";
     if($res && $trans_qry){
         db_commit_transaction();
         $resp['message'] = "successfully order placed";
@@ -189,9 +191,9 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         if(strtolower($_POST['mode']) == 'cod'){
             db_query("DELETE FROM `cart` WHERE `user_id` = '".$user_id."'");
             $tokens = get_user_device_tokens($user_id,"user_id");
-            $message = "Order placed successfully.";
+            $message .= "Your order has been placed successfully";
             if(!empty($tokens['android'])){
-                $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
+                $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order","order_type"=>ORD_NEW_ORDER,"order_id"=>$order_key));
                 send_android_push_notification($tokens['android'], $message, $data);
             }
             if(!empty($tokens['ios'])){
@@ -204,7 +206,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $tokens = get_user_device_tokens($user_id,"user_id");
         if(!empty($tokens['android'])){
             $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
-            $message = "Order placing failed";
+            $message .= "Order placing failed";
             send_android_push_notification($tokens['android'], $message, $data);
         }
         if(!empty($tokens['ios'])){

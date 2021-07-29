@@ -12,6 +12,9 @@ $hash_key = db_escape($_POST['hash_key']);
 if(empty($user_phone) || empty($hash_key)){
     send_response_warning(500,"phone or hash key is missing",array());
     exit;
+}if(empty($_POST['order_type'])){
+    send_response_warning(500,"order type is missing",array());
+    exit;
 }
 
 $resp = array();
@@ -23,30 +26,9 @@ if($row = db_fetch_assoc($usr_qry) && $order_id = makesafe($_POST['order_id'])){
     if(makesafe($_POST['order_type']) == 'order_delivered' && order_handling($order_id,ORD_DELIVERED)){
         $resp['status'] = 200;
         $resp['message'] = "ordered delivered";
-    
-        $tokens = get_user_device_tokens($user_id,"user_id");
-        $message = "Your order is successfully delivered.";
-        if(!empty($tokens['android'])){
-            $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
-            send_android_push_notification($tokens['android'], $message, $data);
-        }
-        if(!empty($tokens['ios'])){
-            // $json_string_payload='{"aps":	{ "alert": { "action-loc-key": "Open","body": "'.$message.'"},"badge": 1,"content-available": 1},"notify_type":"order"}';
-			// $result1 = send_apple_push_notifications($tokens['ios'],$json_string_payload);
-        }
-    }else if(makesafe($_POST['order_type']) == 'order_start' && order_handling(makesafe($_POST['order_id']),ORD_OUT_FOR_DELIVERY)){
+    }else if(makesafe($_POST['order_type']) == 'out_for_delivery' && order_handling($order_id,ORD_OUT_FOR_DELIVERY)){
         $resp['status'] = 200;
-        $resp['message'] = "ordered started";
-        $tokens = get_user_device_tokens($user_id,"user_id");
-        $message = "Your order is out for delivery";
-        if(!empty($tokens['android'])){
-            $data = array("notification"=>array("title"=>"Organic Chicken","notify_type"=>"order"));
-            send_android_push_notification($tokens['android'], $message, $data);
-        }
-        if(!empty($tokens['ios'])){
-            // $json_string_payload='{"aps":	{ "alert": { "action-loc-key": "Open","body": "'.$message.'"},"badge": 1,"content-available": 1},"notify_type":"order"}';
-			// $result1 = send_apple_push_notifications($tokens['ios'],$json_string_payload);
-        }
+        $resp['message'] = "order is out for delivery";
     }else{
         $resp['status'] = 500;
         $resp['message'] = "something went wrong";
