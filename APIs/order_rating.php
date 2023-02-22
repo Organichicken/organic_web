@@ -21,7 +21,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     db_query("DELETE FROM `order_ratings` WHERE `order_id` = '".db_escape($_POST['order_id'])."'");
     if(db_query("INSERT INTO `order_ratings`(`user_id`, `order_id`, `rating`, `review`, `created_at`) VALUES ('".$user_id."','".db_escape($_POST['order_id'])."','".db_escape($_POST['rating'])."','".db_escape($_POST['review'])."','".date('Y-m-d H:i:s')."')")){
         $resp['message'] = "successfully order review added";
-        $resp['body'] = array();
+        $resp['body'] = (object)[];
     }else{
         $resp['status'] = 500;
         $resp['message'] = "something went wrong";

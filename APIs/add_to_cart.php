@@ -24,6 +24,25 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $resp['status'] = 200;
     db_query("DELETE FROM `cart` WHERE `item_id` = '".db_escape($_POST['item_id'])."' AND `user_id` = '".$user_id."'");
     if(empty($_POST['quantity']) || db_query("INSERT INTO `cart`(`cart_id`, `item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".generate_unique_id("cart")."','".db_escape($_POST['item_id'])."','".$user_id."','".db_escape($_POST['quantity'])."','".date('Y-m-d H:i:s')."')")){
+		//If 1kg added for particular item add 1/2kg pack (30-12-2021)
+		/* if($_POST['item_id'] == '#OCITM_TDY5G'){
+			$user_cart_data = get_user_cart_data(db_escape($user_id));
+			// echo json_encode($user_cart_data);
+			$item_cnt = 0;
+			foreach ($user_cart_data as $row) { if('#OCITM_aMPmi' == $row['item_id']) $item_cnt++; }
+			// echo $item_cnt;
+			if($item_cnt < 1){
+				db_query("INSERT INTO `cart`(`cart_id`, `item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".generate_unique_id("cart")."','#OCITM_aMPmi','".$user_id."','1','".date('Y-m-d H:i:s')."')");
+			}
+		}
+		//If 1/2kg added for particular item add 1/4kg pack (30-12-2021)
+		else if($_POST['item_id'] == '#OCITM_aMPmi'){
+			$user_cart_data = get_user_cart_data(db_escape($user_id));
+			$item_cnt = 0;
+			foreach ($user_cart_data as $row) { if('#OCITM_MO5KL' == $row['item_id']) $item_cnt++; }
+			if($item_cnt < 1)
+				db_query("INSERT INTO `cart`(`cart_id`, `item_id`, `user_id`, `quantity`, `updated_at`) VALUES ('".generate_unique_id("cart")."','#OCITM_MO5KL','".$user_id."','1','".date('Y-m-d H:i:s')."')");
+		} */
         $resp['message'] = "success";
 
 		$user_wallet = 0;

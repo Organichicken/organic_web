@@ -21,6 +21,10 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 
     while($row = db_fetch_assoc($res))
     {
+        //Skipping failed transactions
+        // if(strtolower($row['payment_status']) == 'failed') continue;
+        if(strtolower($row['payment_status']) == 'failed' || $row['order_status'] == ORD_PENDING) continue;
+
         $items_data = $payment_data = $ratings_data = $order_data = array();
         $temp_order_data = $row['order_data'] ? json_decode($row['order_data'],true) : array();
 
@@ -34,9 +38,9 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $items_data['item_price'] = (string)round($row['item_price']);
         
         $payment_data['amount'] = (string)round($row['amount']);
-        $payment_data['mode'] = $row['mode'];
-        $payment_data['timestamp'] = $row['timestamp'];
-        $payment_data['payment_status'] = $row['payment_status'];
+        $payment_data['mode'] = $row['mode'] ? $row['mode'] : '';
+        $payment_data['timestamp'] = $row['timestamp'] ? $row['timestamp'] : '';
+        $payment_data['payment_status'] = $row['payment_status'] ? $row['payment_status'] : '';
         
         $ratings_data['rating'] = $row['rating'] ? $row['rating'] : '';
         $ratings_data['review'] = $row['review'] ? $row['review'] : '';
@@ -52,6 +56,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
         $order_data['order_discount_price'] = (string)round($row['order_discount_price']);
         $order_data['cashback'] = $temp_order_data['cashback'] ? (string)$temp_order_data['cashback'] : '0';
         $order_data['used_wallet'] = $temp_order_data['user_wallet'] ? (string)$temp_order_data['user_wallet'] : '0';
+        $order_data['premium_discount_price'] = $temp_order_data['premium_discount_price'] ? (string)$temp_order_data['premium_discount_price'] : '0';
         $order_data['delivery_charges'] = $temp_order_data['delivery_charge'] ? (string)$temp_order_data['delivery_charge'] : '0';
         $order_data['offer_price'] = $temp_order_data['offer_price'] ? (string)$temp_order_data['offer_price'] : '0';
 

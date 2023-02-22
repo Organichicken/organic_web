@@ -11,7 +11,6 @@
 		<!--begin::Toggle-->
 		<button class="brand-toggle btn btn-sm px-0" id="kt_aside_toggle">
 			<span class="svg-icon svg-icon svg-icon-xl">
-				<!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-double-left.svg-->
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
 					<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 						<polygon points="0 0 24 0 24 24 0 24" />
@@ -83,6 +82,18 @@
 					<a href="settings.php" class="menu-link">
 						<span class="icon-xl pr-2 fas fa-cogs"></span>
 						<span class="menu-text">Settings</span>
+					</a>
+				</li>
+				<li class="menu-item <?php if($current_page === 'item_report') echo "menu-item-active"; ?>" aria-haspopup="true">
+					<a href="items_report.php" class="menu-link">
+						<span class="icon-xl pr-2 fas fa-balance-scale"></span>
+						<span class="menu-text">Items Report</span>
+					</a>
+				</li>
+				<li class="menu-item <?php if($current_page === 'notification_center') echo "menu-item-active"; ?>" aria-haspopup="true">
+					<a href="notification_center.php" class="menu-link">
+						<span class="icon-xl pr-2 fas fa-bell"></span>
+						<span class="menu-text">Notification Center</span>
 					</a>
 				</li>
 			</ul>

@@ -74,18 +74,18 @@ if(empty($plan_exists))
 $final_data['member_ship_plans'] = $final_plans_data;
 
 if(!empty($user_id))
-    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_deleted` = '0' ORDER BY items.item_name ASC LIMIT 6");
 else
-    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_deleted` = '0' LIMIT 6");
 
 while($row = db_fetch_assoc($res))
 {
     $items_data[] = $row;
 }
 if(!empty($user_id))
-    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE(cart.quantity,'') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id left outer join cart ON cart.item_id = items.item_id AND cart.user_id = '".db_escape($user_id)."' WHERE `in_stock` = '1' AND `is_deleted` = '0' AND `is_trending` = '1' ORDER BY items.item_name ASC LIMIT 6");
 else
-    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_trending` = '1' LIMIT 6");
+    $res = db_query("SELECT items.*,COALESCE('') as cart_item_quantity,COALESCE(rec.recipe_id,'') as recipe_id,COALESCE(rec.recipe_name,'') as recipe_name FROM `items` left outer join recipe as rec ON rec.item_id = items.item_id WHERE `in_stock` = '1' AND `is_deleted` = '0' AND `is_trending` = '1' LIMIT 6");
 
 while($row = db_fetch_assoc($res))
 {
@@ -109,6 +109,10 @@ $final_data['slider_images'] = $images_data ? json_decode($images_data,true) : a
 //Get tales data
 $tales_data = get_meta_value('tales');
 $final_data['tales'] = $tales_data ? json_decode($tales_data,true) : array();
+
+//Get banner data
+$banner_data = get_meta_value('banner');
+$final_data['banner_image'] = $banner_data ? json_decode($banner_data,true) : array();
 
 $resp['status'] = 200;
 $resp['message'] = "success";

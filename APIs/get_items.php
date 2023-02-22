@@ -15,7 +15,7 @@ if(!empty($user_phone) && !empty($user_hash_key)){
     if(!sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_hash_key."' AND `user_phone` = '".$user_phone."'")){
         $resp['status'] = 404;
         $resp['message'] = "invalid user";
-        $resp['body'] = array();
+        $resp['body'] = (object)[];
         echo json_encode($resp);
         exit;
     }else
@@ -29,7 +29,8 @@ $resp['message'] = "success";
 if(isset($_POST['item_id']) && !empty($_POST['item_id'])){
     $resp['body'] = parse_items_data(get_items_data_for_api(makesafe($_POST['item_id']),$user_id));
 }else if(isset($_POST['category_id']) && !empty($_POST['category_id'])){
-    $resp['body']['items'] = parse_items_data(get_items_by_category(makesafe($_POST['category_id']),$user_id));
+	$items = parse_items_data(get_items_by_category(makesafe($_POST['category_id']),$user_id));
+    $resp['body']['items'] = count($items) > 0 ? $items : [];
     $resp['body']['categories'] = get_categories_data();
 }else{
     $resp['body'] = parse_items_data(get_items_data_for_api('',$user_id));

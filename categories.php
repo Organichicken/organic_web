@@ -20,8 +20,7 @@ include('header.php');
                                     <th>#</th>
                                     <th>Category Name</th>
                                     <th>Category Image</th>
-                                    <th>Quantity</th>
-                                    <th>Weight Type</th>
+                                    <th>No Items text</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -44,13 +43,19 @@ include('header.php');
             <div class="modal-body">
                 <form class="pl-3 pr-3" id="add_new_category_form" enctype="multipart/form-data" method="POST">
                     <div class="row">
-                        <div class="col-md-4 col-lg-4 col-sm-12">
+                        <div class="col-md-6 col-lg-6 col-sm-12">
                             <div class="form-group">
                                 <label for="firstname">Category Name</label>
                                 <input class="form-control" type="text" id="category_name" name="category_name" placeholder="Enter category name">
                             </div>
                         </div>
-                        <div class="col-md-4 col-lg-4 col-sm-12">
+						<div class="col-md-6 col-lg-6 col-sm-12">
+							<div class="form-group">
+								<label for="Category Alt text">No items text</label>
+								<textarea class="form-control" type="text" name="no_items_text" placeholder="Enter text need to display"><?php echo $cat_data['no_items_text']; ?></textarea>
+							</div>
+						</div>
+                        <!--<div class="col-md-4 col-lg-4 col-sm-12">
                             <div class="form-group">
                                 <label for="Quantity">Quantity</label>
                                 <input class="form-control" type="number" id="quantity" name="quantity" placeholder="Enter category quantity" value="0">
@@ -64,7 +69,7 @@ include('header.php');
                                     <option value="grams">Grams</option>
                                 </select>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="col-md-12 col-lg-12 col-sm-12">
                             <div class="form-group">
                                 <div class="col-lg-9 col-xl-6">
@@ -169,7 +174,8 @@ include('header.php');
             });
         });
 
-        var category_cols = [{"data":"category_id"},{"data":"category_name"},{"data":"category_image"},{"data":"quantity"},{"data":"weight_type"}];
+        // var category_cols = [{"data":"category_id"},{"data":"category_name"},{"data":"category_image"},{"data":"quantity"},{"data":"weight_type"}];
+        var category_cols = [{"data":"category_id"},{"data":"category_name"},{"data":"category_image"},{"data":"no_items_text"}];
         
         category_table = $('#category_table').DataTable({
             ScrollX:		true,
@@ -192,11 +198,11 @@ include('header.php');
                 {
                     "render": function ( data, type, row ) {                   
                         return `<span><a href="#" onclick="edit_category('${row['category_id']}')" class="btn btn-icon btn-circle btn-light-skype mr-2">
-                                    <i class="fas fa-pen"></i>
-                                </a>&nbsp<a href="#" onclick="delete_category('${row['category_id']}')" class="btn btn-icon btn-circle btn-light-youtube">
-                                    <i class="fas fa-trash"></i>
-                                </a></span>`;
-                    },"targets": 5
+							<i class="fas fa-pen"></i>
+						</a>&nbsp<a href="#" onclick="delete_category('${row['category_id']}')" class="btn btn-icon btn-circle btn-light-youtube">
+							<i class="fas fa-trash"></i>
+						</a></span>`;
+                    },"targets": 4
                 },
                 {
                     "render": function ( data, type, row ) {                   
@@ -205,9 +211,7 @@ include('header.php');
                 },
 		    ],
             "columns": category_cols,
-            "order": [
-                // [0, "asc"]
-            ]
+            "order": []
         });
         
         $(document).on("dblclick", "#category_table tbody tr", function () {

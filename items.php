@@ -22,13 +22,14 @@ $categories = get_categories_data('');
                                         <th>#</th>
                                         <th>Item Name</th>
                                         <th>Category Name</th>
-                                        <th>Stock Available</th>
+                                        <th>Stock availability in pkts</th>
+                                        <th>Net Weight (Grams)</th>
                                         <th>Price Per Unit</th>
                                         <th>Discount Price</th>
                                         <th>No.of Pieces</th>
-                                        <th>Available Quantity</th>
                                         <th>Serves</th>
 										<th>In Stock</th>
+                                        <th style="width:5%;">Add/Edit Quantity</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -51,13 +52,13 @@ $categories = get_categories_data('');
                     <form class="pl-3 pr-3" id="add_new_item_form" enctype="multipart/form-data" method="POST">
                         <input class="form-control" type="hidden" name="weight_type" value="grams">
                         <div class="row">
-                            <div class="col-md-4 col-lg-4 col-sm-12">
+                            <div class="col-md-6 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="itemname">Item Name</label>
                                     <input class="form-control" type="text" id="item_name" name="item_name" placeholder="Enter item name">
                                 </div>
                             </div>
-                            <div class="col-md-4 col-lg-4 col-sm-12">
+                            <div class="col-md-6 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="category">Select Category</label>
                                     <select class="form-control select2" id="category" name="category">
@@ -70,7 +71,7 @@ $categories = get_categories_data('');
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-lg-4 col-sm-12">
+                            <!--<div class="col-md-4 col-lg-4 col-sm-12">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12 col-sm-12">
@@ -79,7 +80,7 @@ $categories = get_categories_data('');
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="col-md-6 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="lastname">Item Description</label>
@@ -154,7 +155,7 @@ $categories = get_categories_data('');
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12 col-sm-12">
-                                            <label for="lastname">Stock Available Quantity (Kgs)</label>
+                                            <label for="lastname">Stock Available Quantity (Pkts)</label>
                                             <input class="form-control" type="number" id="available_quantity" name="available_quantity" placeholder="Enter quantity" value="0">
                                         </div>
                                     </div>
@@ -195,6 +196,33 @@ $categories = get_categories_data('');
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+	<!-- Add/Edit item quantity -->
+    <div id="item_quantity_modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add/Edit item quantity</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+					<form id="item_quantity_form">
+						<input class="form-control" type="hidden" id="item_id" name="item_id">
+						<div class="row">
+							<div class="col-md-6 col-lg-6 col-sm-12">
+								<div class="form-group">
+									<label for="">Quantity</label>
+									<input class="form-control" type="number" id="quantity" name="quantity" placeholder="Quantity" value="0" min="-50">
+								</div>
+							</div>
+							<div class="col-md-6 col-lg-6 col-sm-12 mt-5">
+								<button type="button" id="add_item_quantity_btn" class="btn btn-success float-right"><i class="fas fa-check"></i> Update</button>
+							</div>
+						</div>
+					</form>              
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
     <?php include('footer.php'); ?>
     <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
     <script>
@@ -212,7 +240,14 @@ $categories = get_categories_data('');
 				}
 			})
 		}
-       
+       var reload_items = function(){
+			KTApp.block("#items_table", { overlayColor: "#000000", state: "danger", message: "Loading please wait..."})
+			items_table.ajax.reload(() => {
+				setTimeout(() => {
+					KTApp.unblock("#items_table");
+				}, 2000);
+			});
+		}
         var delete_item = function (id){
             if(!id) return false;
             Swal.fire({
@@ -226,7 +261,7 @@ $categories = get_categories_data('');
                         success:function (resp){
                             if(resp.status === 'success'){
                                 toastr["success"]("", "Item successfully deleted");
-                                items_table.ajax.reload();
+                                reload_items();
                             }else{
                                 toastr["error"](" ", "Failed to delete item")
                             }
@@ -266,7 +301,7 @@ $categories = get_categories_data('');
                         net_weight: {
                             validators: {
                                 greaterThan: {
-                                    message: 'Net weight should be greater that 1',
+                                    message: 'Net weight should be greater than 1',
                                     min: 1,
                                 },
                                 notEmpty: { message: "Net weight can't be empty" }
@@ -275,7 +310,7 @@ $categories = get_categories_data('');
                         price_per_unit: {
                             validators: {
                                 greaterThan: {
-                                    message: 'Price per unit should be greater that 1',
+                                    message: 'Price per unit should be greater than 1',
                                     min: 1,
                                 },
                                 notEmpty: { message: "Price per unit can't be empty" }
@@ -284,25 +319,31 @@ $categories = get_categories_data('');
                         discount_price: {
                             validators: {
                                 greaterThan: {
-                                    message: 'Discount price should be greater that 1',
+                                    message: 'Discount price should be greater than 1',
                                     min: 1,
+                                },
+								callback: {
+                                    message: 'Discount price should be less than price per unit',
+                                    callback: function (input) {
+                                        return input.value < $('#price_per_unit').val();
+                                    },
                                 },
                                 notEmpty: { message: "Discount price can't be empty" }
                             }
                         },
                         no_of_pieces: {
                             validators: {
-                                greaterThan: {
-                                    message: 'No of pieces should be greater that 1',
+                                /* greaterThan: {
+                                    message: 'No of pieces should be greater than 1',
                                     min: 1,
-                                },
+                                }, */
                                 notEmpty: { message: "No of pieces can't be empty" }
                             }
                         },
                         serves: {
                             validators: {
                                 greaterThan: {
-                                    message: 'Serves should be greater that 1',
+                                    message: 'Serves should be greater than 1',
                                     min: 1,
                                 },
                                 notEmpty: { message: "Serves can't be empty" }
@@ -311,7 +352,7 @@ $categories = get_categories_data('');
                         available_quantity: {
                             validators: {
                                 greaterThan: {
-                                    message: 'Available quantity should be greater that 1',
+                                    message: 'Available quantity should be greater than 1',
                                     min: 1,
                                 },
                                 notEmpty: { message: "Available quantity can't be empty" }
@@ -347,7 +388,7 @@ $categories = get_categories_data('');
                 });
             });
 
-			var item_cols = [{"data":"item_id"},{"data":"item_name"},{"data":"category_name"},{"data":"available_quantity"},{"data":"price_per_unit"},{"data":"discount_price"},{"data":"no_of_pieces"},{"data":"available_quantity"},{"data":"serves"},{"data":"in_stock"}];
+			var item_cols = [{"data":"item_id"},{"data":"item_name"},{"data":"category_name"},{"data":"available_quantity"},{"data":"net_weight"},{"data":"price_per_unit"},{"data":"discount_price"},{"data":"no_of_pieces"},{"data":"serves"},{"data":"in_stock"}];
 			
             items_table = $('#items_table').DataTable({
                 ScrollX:		true,
@@ -360,7 +401,7 @@ $categories = get_categories_data('');
 					"data":{'action':'load_items'}
 				},
                 "columnDefs": [
-                    {"className": "dt-center", "targets": [0]},
+                    {"className": "dt-center", "targets": [0,9,10]},
                     {
                         render: function(data, type, row, meta) {
                             return type == 'display' ? meta.row + 1 : data;
@@ -370,19 +411,59 @@ $categories = get_categories_data('');
                     {
                         "render": function ( data, type, row ) {                   
                             return +row['in_stock'] === 1 ? '<i class="fas fa-check-square text-primary"></i>' : '<i class="fas fa-square"></i>';
-                        },"targets": 8
+                        },"targets": 9
                     },
+					{
+                        "render": function ( data, type, row ) {                   
+                            return `<button type="button" data-toggle="tooltip" title="Add/Edit Quantity" class="btn btn-primary btn-shadow font-weight-bold add_edit_quantity" value="${row['item_id']}"><i class="fas fa-plus pr-0"></i></button>`;
+                        },"targets": 10
+                    }
                 ],
+				"fnInitComplete": function(oSettings, json) {
+					$('[data-toggle="tooltip"]').tooltip({
+						"data-theme" : "dark"
+					});
+				},
 				"columns": item_cols,
-                "order": [
-                    // [0, "asc"]
-                ]
+                "order": []
             });
 			
 			$(document).on("dblclick", "#items_table tbody tr", function () {
-				index = $(this).attr('id');
+				let index = $(this).attr('id');
 				if(!index) return false;
 				edit_item_modal(index);		
+            });
+			$(document).on("click", ".add_edit_quantity", function () {
+				$('#item_quantity_form').trigger("reset");
+				if($(this).val()){
+					$('#item_quantity_modal').modal('show');
+					$('#item_id').val($(this).val());
+				}
+            });
+			$(document).on("click", "#add_item_quantity_btn", function () {
+				if(!(+$('#quantity').val())) return false;
+				
+				$('#add_item_quantity_btn').attr('disabled','disabled');
+				$('#item_quantity_form').ajaxSubmit({
+					url:"ajax_calls.php",dataType:"json",type:"POST",
+					data:{"action" : "change_item_quantity"},
+					success:function (resp){
+						if(resp.status === 'success'){
+							toastr["success"]("", "Successfully updated item quantity");
+							reload_items();
+						}else{
+							toastr["error"](" ", "Updating failed")
+						}
+						setTimeout(() => {
+							$('#add_item_quantity_btn').removeAttr('disabled');
+							$("#item_quantity_modal").modal("hide");
+						}, 2000);
+					},error: function(xhr, status, error) {
+						$('#add_item_quantity_btn').removeAttr('disabled');
+						$('#item_quantity_modal').modal('hide');
+						toastr["error"](" ", "Oops! Something went wrong")
+					}
+				});
             });
             
             $('#add_new_item_btn').click(() => {
@@ -396,7 +477,7 @@ $categories = get_categories_data('');
                             success:function (resp){
                                 if(resp.status === 'success'){
                                     toastr["success"]("", "New item added successfully");
-                                    items_table.ajax.reload();
+                                    reload_items();
                                 }else{
                                     toastr["error"](" ", "Item adding failed")
                                 }

@@ -16,7 +16,7 @@ $tz = "Asia/Kolkata";
 $ROOT_PATH = __DIR__ . '/';
 
 $link = db_connect($dbServer, $dbUsername, $dbPassword,$dbDatabase);
-$map_key = '';
+$map_key = 'AIzaSyBp84A3bZLkm31wFNul_UazxmBTEEuZIaQ';
 
 date_default_timezone_set($tz);
 ?>

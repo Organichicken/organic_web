@@ -26,7 +26,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
 
     if($res){
         $resp['message'] = "successfully saved";
-        $resp['body'] = array();
+        $resp['body'] = (object)[];
     }else{
         $resp['status'] = 500;
         $resp['message'] = "something went wrong";

@@ -34,22 +34,20 @@ $delivery_users = get_delivery_users_data();
                 <div class="card-body">
                     <i class="fas fa-shopping-cart fa-2x text-white"></i>
                     <span class="card-title font-weight-bolder text-white font-size-h2 mb-0 mt-6 d-block"><?php echo sqlValue('SELECT COUNT(*) FROM `orders`'); ?></span>
-                    <span class="font-weight-bold text-white font-size-sm">Total Orders</span>
+                    <span class="font-weight-bold text-white font-size-sm">Total Orders Recieved</span>
                 </div>
                 <!--end::Body-->
             </div>
             <!--end::Stats Widget 30-->
         </div>
-        <div class="col-xl-3">
+		<div class="col-xl-3">
             <!--begin::Stats Widget 31-->
             <div class="card card-custom bg-danger card-stretch gutter-b">
                 <!--begin::Body-->
                 <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-info">
-                        <i class="fas fa-users fa-2x text-white"></i>
-                    </span>
-                    <span class="card-title font-weight-bolder text-white font-size-h2 mb-0 mt-6 d-block"><?php echo sqlValue('SELECT COUNT(*) FROM `users`'); ?></span>
-                    <span class="font-weight-bold text-white font-size-sm">Total users</span>
+                    <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                    <span class="card-title font-weight-bolder text-white font-size-h2 mb-0 mt-6 d-block"><?php echo sqlValue('SELECT COUNT(*) FROM `orders` WHERE `status` = '.ORD_NEW_ORDER); ?></span>
+                    <span class="font-weight-bold text-white font-size-sm">Total Pending Orders</span>
                 </div>
                 <!--end::Body-->
             </div>
@@ -60,11 +58,9 @@ $delivery_users = get_delivery_users_data();
             <div class="card card-custom bg-dark card-stretch gutter-b">
                 <!--begin::Body-->
                 <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-info">
-                        <i class="fas fa-users fa-2x text-white"></i>
-                    </span>
-                    <span class="card-title font-weight-bolder text-white font-size-h2 mb-0 mt-6 d-block"><?php echo sqlValue('SELECT COUNT(*) FROM `users`'); ?></span>
-                    <span class="font-weight-bold text-white font-size-sm">Total users</span>
+                    <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                    <span class="card-title font-weight-bolder text-white font-size-h2 mb-0 mt-6 d-block"><?php echo sqlValue('SELECT COUNT(*) FROM `orders` WHERE `status` = '.ORD_DELIVERED); ?></span>
+                    <span class="font-weight-bold text-white font-size-sm">Total Orders Delivered</span>
                 </div>
                 <!--end::Body-->
             </div>
@@ -89,7 +85,10 @@ $delivery_users = get_delivery_users_data();
                                 <tr>
                                     <th>Order ID</th>
                                     <th>User ID</th>
+                                    <th>User Phone</th>
                                     <th>Order At</th>
+									<th>Delivery Date</th>
+                                    <th>Delivery Slot</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -250,7 +249,7 @@ include_once('footer.php');
     }
     $(document).ready(function (){
 
-        const order_cols = [{"data":"order_key"},{"data":"user_id"},{"data":"order_at"},{"data":"status"}];
+        const order_cols = [{"data":"order_key"},{"data":"user_id"},{"data":"phone"},{"data":"order_at"},{"data":"delivery_date"},{"data":"delivery_slot"},{"data":"status"}];
         $('.select2').select2();
         order_table = $('#order_table').DataTable({
             ScrollX:		true,
@@ -281,8 +280,12 @@ include_once('footer.php');
                             return  `<span class="label label-lg label-light-danger label-inline">User Canceled</span>`;
                         }else if(row['status'] == '<?php echo ORD_OUT_FOR_DELIVERY; ?>'){
                             return  `<span class="label label-lg label-light-primary label-inline">Out for delivery</span>`;
-                        }
-                    },"targets": 3
+                        }else if(row['status'] == '<?php echo ORD_PENDING; ?>'){
+                            return  `<span class="label label-lg label-light-primary label-inline">Pending</span>`;
+                        }else{
+							return row['status'];
+						}
+                    },"targets": 6
                 }
 		    ],
             "fnInitComplete": function(oSettings, json) {
@@ -292,12 +295,10 @@ include_once('footer.php');
             },
             "columns": order_cols,
             "order": [
-                [2, "desc"]
+                [3, "desc"]
             ]
         });
-        /* setInterval(() => {
-            reload_orders();
-        }, 8000); */
+       
         $(document).on("click", "#reload_orders", function () {
             reload_orders();		
         });

@@ -192,7 +192,7 @@ $(document).ready(function (){
 
 	$(document).off("click", "#edit_add_ingrediant_btn").on("click", "#edit_add_ingrediant_btn", function (e) {
 		e.preventDefault();
-		if($('#edit_ingrediants_table tbody tr').length > 10) return false;
+		//if($('#edit_ingrediants_table tbody tr').length > 10) return false;
 		$('#edit_ingrediants_table tbody').append(`<tr>
 			<td>
 				<input class="form-control" type="text" name="ingrediant_name_${edit_ing_cnt}" placeholder="Enter name">
@@ -210,7 +210,7 @@ $(document).ready(function (){
 	});
 
 	$(document).off("click", "#edit_add_recipe_step_btn").on("click", "#edit_add_recipe_step_btn", function () {
-		if($('#edit_recipe_steps tbody tr').length > 10) return false;
+		//if($('#edit_recipe_steps tbody tr').length > 10) return false;
 		edit_rcp_step_cnt++;
 		$('#edit_recipe_steps tbody').append(`<tr>
 			<td>

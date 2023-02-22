@@ -6,22 +6,18 @@
 					<!--end::Content-->
 					<!--begin::Footer-->
 					<div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
-						<!--begin::Container-->
+						<!--begin::Container
 						<div class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
-							<!--begin::Copyright-->
 							<div class="text-dark order-2 order-md-1">
 								<span class="text-muted font-weight-bold mr-2">2020©</span>
 								<a href="http://keenthemes.com/metronic" target="_blank" class="text-dark-75 text-hover-primary">Keenthemes</a>
 							</div>
-							<!--end::Copyright-->
-							<!--begin::Nav-->
 							<div class="nav nav-dark">
 								<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-5">About</a>
 								<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-5">Team</a>
 								<a href="http://keenthemes.com/metronic" target="_blank" class="nav-link pl-0 pr-0">Contact</a>
 							</div>
-							<!--end::Nav-->
-						</div>
+						</div>-->
 						<!--end::Container-->
 					</div>
 					<!--end::Footer-->
@@ -35,7 +31,6 @@
 		<!--begin::Scrolltop-->
 		<div id="kt_scrolltop" class="scrolltop">
 			<span class="svg-icon">
-				<!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Up-2.svg-->
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
 					<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 						<polygon points="0 0 24 0 24 24 0 24" />
@@ -81,7 +76,7 @@
 
 		var orders_check = function(cnt){
 			console.log(cnt,localStorage.getItem('orders_count'));
-			if(localStorage.getItem('orders_count') && cnt > localStorage.getItem('orders_count')){
+			if(localStorage.getItem('orders_count') && cnt > (+localStorage.getItem('orders_count'))){
 				notifyMe(+cnt - (+localStorage.getItem('orders_count')));
 			}
 			localStorage.setItem('orders_count',cnt);
@@ -91,15 +86,16 @@
 			if($('#order_table').length){
 				reload_orders();
 			}
+			console.log(Notification.permission);
 			if (Notification.permission !== 'granted')
 				Notification.requestPermission();
 			else {
 				var notification = new Notification(`You have ${diff} new orders`, {
-					icon: 'http://localhost/organic_chicken/uploads/icon.jpeg',
+					icon: 'https://organichicken.in/admin-panel/uploads/icon.jpeg',
 					body: 'Please check orders page for new orders!',
 				});
 				notification.onclick = function() {
-					window.open('http://localhost/organic_chicken/orders.php');
+					window.open('https://organichicken.in/admin-panel/orders.php');
 				};
 			}
 		}

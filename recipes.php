@@ -331,7 +331,7 @@ $all_items = get_items_data('');
         });
         
         $(document).on("click", "#add_ingrediant_btn", function () {
-            if($('#ingrediants_table tbody tr').length > 10) return false;
+            //if($('#ingrediants_table tbody tr').length > 10) return false;
             $('#ingrediants_table tbody').append(`<tr>
                 <td>
                     <input class="form-control" type="text" name="ingrediant_name_${ing_cnt}" placeholder="Enter name">
@@ -352,7 +352,7 @@ $all_items = get_items_data('');
         });
 
         $(document).on("click", "#add_recipe_step_btn", function () {
-            if($('#recipe_method_table tbody tr').length > 10) return false;
+            //if($('#recipe_method_table tbody tr').length > 10) return false;
             $('#recipe_method_table tbody').append(`<tr>
                 <td>
                     <span>${rcp_step_cnt}</span>

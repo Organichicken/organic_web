@@ -19,7 +19,7 @@ if(sqlValue("SELECT COUNT(*) FROM `employee_otp_key` WHERE `nkey` = '".$user_has
     $resp['status'] = 200;
     if(db_query("DELETE FROM `address` WHERE `address_id` = '".makesafe($_POST['address_id'])."'")){
         $resp['message'] = "successfully address deleted";
-        $resp['body'] = array();
+        $resp['body'] = [];
     }else{
         $resp['status'] = 500;
         $resp['message'] = "something went wrong";

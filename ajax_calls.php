@@ -16,6 +16,8 @@ if(isset($_POST['action']) && $_POST['action'] == 'load_users')
 		$temp_data['last_name'] = $row['last_name'];
 		$temp_data['email'] = $row['email'];
 		$temp_data['phone'] = $row['phone'];
+		$user_wallet = sqlValue("SELECT SUM(`amount`) FROM `user_wallet` WHERE `user_id` = '".$row['user_id']."' AND `status` = 'success'");
+		$temp_data['user_wallet'] = $user_wallet ? (string)$user_wallet : '0' ;
 		$temp_data['is_member'] = $row['is_member'] ? "Yes" : "No";
 		$temp_data['status'] = (int)$row['active'] === 1 ? "Active" : "Inactive";
 		$final_data[] = $temp_data;
@@ -45,8 +47,9 @@ else if(isset($_POST['action']) && $_POST['action'] == 'load_categories')
 		$temp_data['category_id'] = $row['category_id'];
 		$temp_data['category_name'] = $row['category_name'];
 		$temp_data['category_image'] = $row['category_image'];
-		$temp_data['quantity'] = $row['quantity'];
-		$temp_data['weight_type'] = $row['weight_type'] === 'grams' ? 'Grams' : 'Kgs';
+		$temp_data['no_items_text'] = $row['no_items_text'];
+		// $temp_data['quantity'] = $row['quantity'];
+		// $temp_data['weight_type'] = $row['weight_type'] === 'grams' ? 'Grams' : 'Kgs';
 		$final_data[] = $temp_data;
 	}
 	echo json_encode(array("data"=>$final_data));
@@ -90,9 +93,9 @@ else if(isset($_POST['action']) && $_POST['action'] == 'edit_category')
 	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
 	$target_resize_file = $target_dir.$encrypt_name."_thumb".'.'.end($img_name);
 	
+	$data = $_POST;
+	$data['img_path'] = $encrypt_name.'.'.end($img_name);
 	if((int)$_POST['is_image_changed'] !== 1){
-		$data = $_POST;
-		$data['img_path'] = $encrypt_name.'.'.end($img_name);
 		if(update_category($data,false)){//For updating new category
 			echo json_encode(array("status"=>"success"));
 		}else{
@@ -104,7 +107,7 @@ else if(isset($_POST['action']) && $_POST['action'] == 'edit_category')
 		include ("smart_resize_image.php");
 		smart_resize_image($target_file , null, 150 , 150 , 100 , $target_resize_file , false , false ,50 );
 		move_uploaded_file($_FILES['category_image']['tmp_name'],$target_resize_file);
-		if(update_category($_POST['category_id'],$_POST['category_name'],$encrypt_name.'.'.end($img_name),true)){//For updating category
+		if(update_category($data,true)){//For updating category
 			echo json_encode(array("status"=>"success"));
 		}else{
 			echo json_encode(array("status"=>"fail"));
@@ -414,7 +417,10 @@ else if(isset($_POST['action']) && $_POST['action'] == 'add_new_tale_image'){
 	$img_name = explode(".", $_FILES["tale_image"]["name"]);
 	$encrypt_name = strtolower(str_replace(' ', '_',makesafe($img_name[0]))).'_'.time();
 	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
-	$target_resize_file = $target_dir.$encrypt_name."_thumb".'.'.end($img_name);
+	
+	$header_img_name = explode(".", $_FILES["header_tale_image"]["name"]);
+	$header_encrypt_name = strtolower(str_replace(' ', '_',makesafe($header_img_name[0]))).'_'.time();
+	$header_target_file = $target_dir.$header_encrypt_name.'.'.end($header_img_name);
 
 	$data = $_POST;
 	$data['img_path'] = '';
@@ -422,10 +428,10 @@ else if(isset($_POST['action']) && $_POST['action'] == 'add_new_tale_image'){
 	//Code will move file to local folder
 	if(move_uploaded_file($_FILES['tale_image']['tmp_name'],$target_file)){
 		$data['img_path'] = $encrypt_name.'.'.end($img_name);
-		include ("smart_resize_image.php");
-		smart_resize_image($target_file , null, 150 , 150 , 100 , $target_resize_file , false , false ,50 );
-		move_uploaded_file($_FILES['tale_image']['tmp_name'],$target_resize_file);
-		$data['thumb_img_path'] = $encrypt_name."_thumb".'.'.end($img_name);
+		// include ("smart_resize_image.php");
+		// smart_resize_image($target_file , null, 150 , 150 , 100 , $target_resize_file , false , false ,50 );
+		move_uploaded_file($_FILES['header_tale_image']['tmp_name'],$header_target_file);
+		$data['thumb_img_path'] = $header_encrypt_name.'.'.end($header_img_name);
 	}
 	if($id = add_tale_image($data))
 		echo json_encode(array("status"=>"success","img_path"=>$data['img_path'],"id"=>$id));
@@ -468,6 +474,84 @@ else if(isset($_POST['action']) && $_POST['action'] == 'add_edit_member_ship_pla
 }
 else if(isset($_POST['action']) && $_POST['action'] == 'delete_member_ship_plan'){
 	if(!empty($_POST['id']) && delete_member_ship_plan($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}else if(isset($_POST['action']) && $_POST['action'] == 'filter_orders'){
+	$orders_data = array();
+	if(!empty($_POST['order_start']) && !empty($_POST['order_end'])){
+		/* if(!empty($_POST['delivery_slots'])){
+			$time_slots = explode(' - ',$_POST['delivery_slots']);
+			$start_date = $_POST['order_start'].' '.trim($time_slots[0]);
+			$end_date = $_POST['order_end'].' '.trim($time_slots[1]);
+			// $end_date = date('Y-m-d H:i:s',strtotime($_POST['order_end'].trim($time_slots[0])));
+		}else{
+			$start_date = $_POST['order_start'];
+			$end_date = $_POST['order_end'];
+		} */
+		$orders_data = filter_orders($_POST['order_start'],$_POST['order_end'],$_POST['delivery_slots'],$_POST['order_status']);
+	}
+	echo json_encode($orders_data);
+}else if(isset($_POST['action']) && $_POST['action'] == 'change_item_quantity'){
+	if(!empty($_POST['item_id']) && !empty($_POST['quantity']) && update_item_quantity($_POST['item_id'],$_POST['quantity']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_new_banner_image'){
+	$target_dir = "uploads/banners/";
+
+	$img_name = explode(".", $_FILES["banner_image"]["name"]);
+	$encrypt_name = strtolower(str_replace(' ', '_',makesafe($img_name[0]))).'_'.time();
+	$target_file = $target_dir.$encrypt_name.'.'.end($img_name);
+
+	$data = $_POST;
+	$data['img_path'] = '';
+	//Code will move file to local folder
+	if(move_uploaded_file($_FILES['banner_image']['tmp_name'],$target_file)){
+		$data['img_path'] = $encrypt_name.'.'.end($img_name);
+	}
+	if($id = add_banner_image($data))
+		echo json_encode(array("status"=>"success","img_path"=>$data['img_path'],"id"=>$id));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_banner_image'){
+	if(!empty($_POST['id']) && delete_banner_image($_POST['id']))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_order'){
+	echo json_encode(delete_full_order($_POST['order_id'],$_POST['password']));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'get_item_report'){
+	$report_data = array();
+	if(!empty($_POST['start_date']) && !empty($_POST['end_date']) && !empty($_POST['item_id'])){
+		$report_data = get_items_report_data($_POST['start_date'],$_POST['end_date'],$_POST['item_id']);
+	}
+	echo json_encode($report_data);
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'send_notifications'){
+	$report_data = array();
+	if(!empty($_POST['user_type']) && !empty($_POST['message'])){
+		send_notifications($_POST['user_type'],$_POST['message']);
+	}
+	echo json_encode($report_data);
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'load_pincodes'){
+	echo json_encode(array("data"=>get_pincodes_data()));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'add_edit_pincode'){
+	if($_POST['pincode_action'] == 'new_pincode' && add_new_pincode($_POST))
+		echo json_encode(array("status"=>"success"));
+	else if($_POST['pincode_action'] == 'edit_pincode' && update_pincode($_POST))
+		echo json_encode(array("status"=>"success"));
+	else 
+		echo json_encode(array("status"=>"fail"));
+}
+else if(isset($_POST['action']) && $_POST['action'] == 'delete_pincode'){
+	if(!empty($_POST['id']) && delete_pincode($_POST['id']))
 		echo json_encode(array("status"=>"success"));
 	else 
 		echo json_encode(array("status"=>"fail"));

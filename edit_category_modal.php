@@ -7,13 +7,19 @@ $cat_data = get_categories_data($cust_id)[0];
 <form class="pl-3 pr-3" id="edit_category_form">
 	<input type="hidden" name="category_id" value="<?php echo $cat_data['category_id']; ?>">
     <div class="row">
-		<div class="col-md-4 col-lg-4 col-sm-12">
+		<div class="col-md-6 col-lg-6 col-sm-12">
             <div class="form-group">
                 <label for="Category Name">Category Name</label>
                 <input class="form-control" type="text" id="category_name" name="category_name" placeholder="Enter category name" value="<?php echo $cat_data['category_name']; ?>">
             </div>
         </div>
-		<div class="col-md-4 col-lg-4 col-sm-12">
+		<div class="col-md-6 col-lg-6 col-sm-12">
+            <div class="form-group">
+                <label for="Category Alt text">No items text</label>
+				<textarea class="form-control" type="text" name="no_items_text" placeholder="Enter text need to display"><?php echo $cat_data['no_items_text']; ?></textarea>
+            </div>
+        </div>
+		<!--<div class="col-md-4 col-lg-4 col-sm-12">
 			<div class="form-group">
 				<label for="Quantity">Quantity</label>
 				<input class="form-control" type="number" name="quantity" placeholder="Enter category quantity" value="<?php echo $cat_data['quantity']; ?>">
@@ -27,11 +33,11 @@ $cat_data = get_categories_data($cust_id)[0];
 					<option value="grams" <?php if($cat_data['weight_type'] === 'grams') echo 'selected'; ?>>Grams</option>
 				</select>
 			</div>
-		</div>
-        <div class="col-md-12 col-lg-12 col-sm-12">
+		</div>-->
+        <div class="col-md-6 col-lg-6 col-sm-12">
             <div class="form-group row">
-				<label for="Category Image" class="col-xl-3 col-lg-3 col-form-label">Category Image</label>
-				<div class="col-lg-9 col-xl-6">
+				<label for="Category Image" class="col-xl-12 col-lg-12 col-form-label">Category Image</label>
+				<div class="col-lg-12 col-xl-12">
 					<div class="image-input image-input-outline" id="edit_cat_image_div" style="background-image: url(<?php echo get_image_url('category').$cat_data['category_image']; ?>)">
 						<div class="image-input-wrapper" style="background-image: none;"></div>
 						<label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change image">
@@ -49,7 +55,6 @@ $cat_data = get_categories_data($cust_id)[0];
 				</div>
             </div>
         </div>
-                                
         <div class="col-12 mt-3">
             <div class="form-group text-right">
                 <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>

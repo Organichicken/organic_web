@@ -9,13 +9,13 @@ $categories = get_categories_data('');
 	<input class="form-control" type="hidden" name="weight_type" value="grams">
 	<input class="form-control" type="hidden" name="item_id" value="<?php echo $item_data['item_id']; ?>">
 	<div class="row">
-		<div class="col-md-4 col-lg-4 col-sm-12">
+		<div class="col-md-6 col-lg-6 col-sm-12">
 			<div class="form-group">
 				<label for="itemname">Item Name</label>
 				<input class="form-control" type="text" id="item_name" name="item_name" placeholder="Enter item name" value="<?php echo $item_data['item_name']; ?>">
 			</div>
 		</div>
-		<div class="col-md-4 col-lg-4 col-sm-12">
+		<div class="col-md-6 col-lg-6 col-sm-12">
 			<div class="form-group">
 				<label for="emailaddress">Select Category</label>
 				<select class="form-control select2" id="edit_category" name="edit_category">
@@ -27,7 +27,7 @@ $categories = get_categories_data('');
 				</select>
 			</div>
 		</div>
-		<div class="col-md-4 col-lg-4 col-sm-12">
+		<!--<div class="col-md-4 col-lg-4 col-sm-12">
 			<div class="form-group">
 				<div class="row">
 					<div class="col-md-12 col-lg-12 col-sm-12">
@@ -36,7 +36,7 @@ $categories = get_categories_data('');
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>-->
 		<div class="col-md-6 col-lg-6 col-sm-12">
 			<div class="form-group">
 				<label for="lastname">Item Description</label>
@@ -86,7 +86,7 @@ $categories = get_categories_data('');
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">Price per unit</label>
-				<input class="form-control" type="number" id="price_per_unit" name="price_per_unit" placeholder="Price per unit" value="<?php echo $item_data['price_per_unit']; ?>" min="0">
+				<input class="form-control" type="number" id="edit_price_per_unit" name="price_per_unit" placeholder="Price per unit" value="<?php echo $item_data['price_per_unit']; ?>" min="0">
 			</div>
 		</div>					
 		<div class="col-md-3 col-lg-3 col-sm-12">
@@ -98,7 +98,7 @@ $categories = get_categories_data('');
 		<div class="col-md-3 col-lg-3 col-sm-12">
 			<div class="form-group">
 				<label for="">No.of pieces</label>
-				<input class="form-control" type="number" id="no_of_pieces" name="no_of_pieces" placeholder="No.of pieces" value="<?php echo $item_data['no_of_pieces']; ?>">
+				<input class="form-control" type="text" id="no_of_pieces" name="no_of_pieces" placeholder="No.of pieces" value="<?php echo $item_data['no_of_pieces']; ?>">
 			</div>
 		</div>				
 		<div class="col-md-3 col-lg-3 col-sm-12">
@@ -111,7 +111,7 @@ $categories = get_categories_data('');
 			<div class="form-group">
 				<div class="row">
 					<div class="col-md-12 col-lg-12 col-sm-12">
-						<label for="lastname">Stock Available Quantity (Kgs)</label>
+						<label for="lastname">Stock Available Quantity (Pkts)</label>
 						<input class="form-control" type="number" id="available_quantity" name="available_quantity" placeholder="Enter quantity" value="<?php echo $item_data['available_quantity']; ?>">
 					</div>
 				</div>
@@ -160,7 +160,7 @@ $(document).ready(function (){
 				net_weight: {
 					validators: {
 						greaterThan: {
-							message: 'Net weight should be greater that 1',
+							message: 'Net weight should be greater than 1',
 							min: 1,
 						},
 						notEmpty: { message: "Net weight can't be empty" }
@@ -169,7 +169,7 @@ $(document).ready(function (){
 				price_per_unit: {
 					validators: {
 						greaterThan: {
-							message: 'Price per unit should be greater that 1',
+							message: 'Price per unit should be greater than 1',
 							min: 1,
 						},
 						notEmpty: { message: "Price per unit can't be empty" }
@@ -178,25 +178,31 @@ $(document).ready(function (){
 				discount_price: {
 					validators: {
 						greaterThan: {
-							message: 'Discount price should be greater that 1',
+							message: 'Discount price should be greater than 1',
 							min: 1,
+						},
+						callback: {
+							message: 'Discount price should be less than the price per unit',
+							callback: function (input) {
+								return +input.value < +$('#edit_price_per_unit').val();
+							},
 						},
 						notEmpty: { message: "Discount price can't be empty" }
 					}
 				},
 				no_of_pieces: {
 					validators: {
-						greaterThan: {
-							message: 'No of pieces should be greater that 1',
+						/* greaterThan: {
+							message: 'No of pieces should be greater than 1',
 							min: 1,
-						},
+						}, */
 						notEmpty: { message: "No of pieces can't be empty" }
 					}
 				},
 				serves: {
 					validators: {
 						greaterThan: {
-							message: 'Serves should be greater that 1',
+							message: 'Serves should be greater than 1',
 							min: 1,
 						},
 						notEmpty: { message: "Serves can't be empty" }
@@ -205,7 +211,7 @@ $(document).ready(function (){
 				available_quantity: {
 					validators: {
 						greaterThan: {
-							message: 'Available quantity should be greater that 1',
+							message: 'Available quantity should be greater than 1',
 							min: 1,
 						},
 						notEmpty: { message: "Available quantity can't be empty" }

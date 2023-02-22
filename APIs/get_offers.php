@@ -16,7 +16,7 @@ $user_hash_key = db_escape($_POST['hash_key']); */
 {
     $offers = array();
     $resp['status'] = 200;
-    $resp['message'] = "cart details";
+    $resp['message'] = "offer details";
     foreach (get_offers_data(null,true) as $row) {
         unset($row['updated_at']);
         $row['min_order_price'] = (string)round($row['min_order_price']);
